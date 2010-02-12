@@ -14,15 +14,43 @@
 .roomHeader {
     float: left; text-align: center; margin-bottom: 5px; width: 163px; padding: 0px 5px
 }
+.roomBlock {
+    position: relative; width: 173px; border: 1px solid; border-color: #838383; background-image: url(img/calendar_bg2.gif); background-position: 0 -2px; 
+}
 .timeHeader { 
     position: absolute; margin-top: 0; width: 50px; text-align: left; margin-left: 0;
 }
 .timeBlock { 
-    position:absolute; top: 0; width: 50px; height: 600px; border-color: #838383; background-image: url(img/calendar_bg2.gif); font-family: Tahoma, Verdana; font-size: 8pt; color: #838383; border-top: 1px solid; border-color: #838383; background-position: 0 -2px
+    position:absolute; top: 0; width: 50px; border-color: #838383; background-image: url(img/calendar_bg2.gif); font-family: Tahoma, Verdana; font-size: 8pt; color: #838383; border-top: 1px solid; border-color: #838383; background-position: 0 -2px
 }
+
 .schedItem {
     position: absolute; width: 161px; padding: 5px 5px; border: 1px solid; 
-    opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #FFFFFF; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden
+    font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden;
+    border-color: #000000;
+    opacity: 0.80;  -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; 
+}
+/* Types */
+
+.closed {
+    background-color: #4c4c4c; 
+    color: #EEEEEE;
+}
+.performance { 
+    color: #111111;
+    background-color: #FF7F47;
+}
+.game_contests { 
+    color: #3A3939;
+    background-color: #75FF62;
+}
+.art_creative { 
+    color: #000000;
+    background-color: #017CFD;
+}
+.academic { 
+    color: #000000;
+    background-color: #FB0000;
 }
 
 --></style>
@@ -43,7 +71,7 @@ $data = array(
         $day1 => array(
             '1000' => array(
                 'name'   => 'Gavin says its closed sucka',
-                'length' => 8,
+                'length' => 3,
                 'type'   => array('closed'),
             ),
             '1200' => array(
@@ -111,7 +139,7 @@ $data = array(
         $day1 => array(
             '1000' => array(
                 'name'   => 'this one is up for grabs',
-                'length' => 6,
+                'length' => 4,
                 'type'   => array('closed'),
             ),
             '1200' => array(
@@ -162,6 +190,9 @@ sort($rooms);
 foreach ($days as $day):
 ?>
     <h3><?php echo date('l jS F Y', $day); ?></h3><br />
+    <?php 
+        $totalHours = (($hourData[$day]['max']-$hourData[$day]['min'])/100);
+    ?>
     
     <div style="margin-left: 25px">
         <?php foreach ($rooms as $room): ?>
@@ -170,172 +201,45 @@ foreach ($days as $day):
     </div>
     <div class="clear"></div>
    
+    <?php 
+    foreach ($rooms as $room)
+    {
+    ?>
     <div style="position: relative; float: left; margin-bottom: 25px">
-        <div style="position: relative; width: 173px; height: 598px; border: 1px solid; border-color: #838383; background-image: url(img/calendar_bg2.gif); background-position: 0 -2px; margin-left: 50px">
+        <div  class="roomBlock" style="height: <?php echo (($totalHours+1)*$hourHeight)-2 ?>px; <?php if ($room == $rooms[0]): ?> margin-left: 50px<?php endif ?>">
             <?php 
                 $timeOffset = 0;
-                foreach ($data[$room][$day] as $hour => $eventData) {
-                    $timeHeight = ($hourHeight/2)*$eventData['length']-13 /* 12 = padding + border */;
+                foreach ($data[$room][$day] as $hour => $eventData) 
+                {
+                    $timeHeight = floor($hourHeight/2)*$eventData['length']-12 /* 12 = padding + border */;
+                    $timeOffset = -1;
+                    if ($hour != $hourData[$day]['min'])
+                        $timeOffset = $hourHeight*floor(($hour-$hourData[$day]['min'])/100);
+                    if ($timeOffset > 0) $timeOffset -= 1;
+                    ?>
+                    <div style="margin-top: <?php echo $timeOffset; ?>px">
+                        <div style="height: <?php echo $timeHeight; ?>px;" class="schedItem <?php echo $eventData['type'][0] ?>">
+                            <?php echo htmlentities($eventData['name']); ?>
+                        </div>
+                    </div>
+                    <?php
+                } 
             ?>
-            <div style="margin-top: <?php echo $timeOffset; ?>px">
-                <div style="height: <?php echo $timeHeight; ?>px; background-color: #4c4c4c; border-color: #000000;" class="schedItem">
-                    <?php echo htmlentities($eventData['name']); ?>
-                </div>
-            </div>
-            <?php
-                    $timeOffset += $timeHeight + 13;
-            } 
-            ?>
-            <!--
-        <div style="position: absolute; margin-top: -1px; width: 173px; height: <?php echo ($hourHeight/2)*$eventData['length'] ?>px">
-            <div style="position: absolute; margin-top: 149px; width: 173px; height: 50px">
-                <div style="position: absolute; width: 161px; height: 38px; padding: 5px 5px; background-color: #a55dff; border: 1px solid; border-color: #6107d1; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #FFFFFF; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                    Opening ceremonies
-                </div>
-            </div>
-            <div style="position: absolute; margin-top: 199px; width: 173px; height: 25px">
-                <div style="position: absolute; width: 161px; height: 13px; padding: 5px 5px; background-color: #75ff62; border: 1px solid; border-color: #1dc705; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                    Con Etiquette
-                </div>
-            </div>
-            <div style="position: absolute; margin-top: 224px; width: 173px; height: 75px">
-                <div style="position: absolute; width: 161px; height: 63px; padding: 5px 5px; background-color: #a9a9a9; border: 1px solid; border-color: #767676; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                    Lolita Fashion Show Setup
-                </div>
-            </div>
-                    
-            <div style="position: absolute; margin-top: 299px; width: 173px; height: 75px">
-                <div style="position: absolute; width: 161px; height: 63px; padding: 5px 5px; background-color: #ffdf2c; border: 1px solid; border-color: #d3b50b; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                    Lolita Fashion Show
-                </div>
-            </div>
-                    
-            <div style="position: absolute; margin-top: 374px; width: 173px; height: 225px">
-                <div style="position: absolute; width: 161px; height: 213px; padding: 5px 5px; background-color: #ffdf2c; border: 1px solid; border-color: #d3b50b; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                    Fan Parodies
-                </div>
-            </div>
-            -->
         </div>
                 
-        <div class="timeBlock">
+        <?php if ($room == $rooms[0]): ?>
+        <div class="timeBlock" style="height: <?php echo (($totalHours+1)*$hourHeight) ?>px">
             <?php $count=0; foreach (range($hourData[$day]['minHour'], $hourData[$day]['maxHour']) as $hour): ?>
             <div class="timeHeader" style="margin-top: <?php echo $hourHeight*$count++ ?>px;">
                 <?php echo date('g:i A', mktime($hour,0)); ?>
             </div>
-        <?php endforeach ?>
+            <?php endforeach ?>
         </div>
+        <?php endif; ?>
     </div>
-    <div style="position: relative; float: left; margin-bottom: 25px">
-            
-                <div style="position: relative; width: 173px; height: 598px; border: 1px solid; border-color: #838383; background-image: url(img/calendar_bg2.gif); background-position: 0 -2px; border-left: 0px">
-                    
-                        <div style="position: absolute; margin-top: -1px; width: 173px; height: 200px" onmouseover="document.getElementById('148').style.display='block'" onmouseout="document.getElementById('148').style.display='none'">
-                            <div style="position: absolute; width: 161px; height: 188px; padding: 5px 5px; background-color: #4c4c4c; border: 1px solid; border-color: #000000; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #FFFFFF; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                /Closed/
-                            </div>
-                        </div>
-                    
-                        <div style="position: absolute; margin-top: 249px; width: 173px; height: 50px">
-                            <div style="position: absolute; width: 161px; height: 38px; padding: 5px 5px; background-color: #75ff62; border: 1px solid; border-color: #1dc705; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                Step up your game! (DDR)
-                            </div>
-                        </div>
-                    </div>
-                
-                
-            </div><div style="position: relative; float: left; margin-bottom: 25px">
-            
-                <div style="position: relative; width: 173px; height: 598px; border: 1px solid; border-color: #838383; background-image: url(img/calendar_bg2.gif); background-position: 0 -2px; border-left: 0px">
-                    
-                        <div style="position: absolute; margin-top: -1px; width: 173px; height: 200px" onmouseover="document.getElementById('147').style.display='block'" onmouseout="document.getElementById('147').style.display='none'">
-                            <div style="position: absolute; width: 161px; height: 188px; padding: 5px 5px; background-color: #4c4c4c; border: 1px solid; border-color: #000000; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #FFFFFF; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                /Closed/
-                            </div>
-                            <div style="position: absolute; top: 0px; right: 0px; width: 14px; height: 14px; background: url(img/attendingevent.png) top left no-repeat; display: none" title="In your planner" id="plannerlabel147">
-                                <!-- -->
-                            </div>
-                        </div>
-                        <div style="display: none; z-index: 1; position: absolute; margin-top: -1px; width: 173px" onmouseover="document.getElementById('147').style.display='block'" onmouseout="document.getElementById('147').style.display='none'" id="147">
-                            <div style="position: absolute; width: 161px; padding: 5px 5px; background-color: #4c4c4c; border: 1px solid; border-color: #000000; font-family: Tahoma, Verdana; font-size: 8pt; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px">
-                                <span style="color: #FFFFFF"><b>/Closed/</b><br />11:00 AM - 3:00 PM</span>
-                                <a href="#" onclick="showalert('1','2','<h2>Registered attendees only!</h2><br />Only registered attendees can create a planner. If you are already registered, please log in and link your badge via the <b>My badge</b> page.'); return false">
-                                <div class="buttons-planneradd" onmouseover="this.className='buttons-planneradd-hover'" onmouseout="this.className='buttons-planneradd'" style="margin-top: 5px">
-                                    Add to planner
-                                </div>
-                                </a><a href="#" onclick="showattendees('147'); return false">
-                                <div class="buttons-attendees" onmouseover="this.className='buttons-attendees-hover'" onmouseout="this.className='buttons-attendees'" style="margin-top: 5px">
-                                    Attendees
-                                </div>
-                                </a>
-                            </div>
-                            <div style="position: absolute; top: 0px; right: 0px; width: 14px; height: 14px; background: url(img/attendingevent.png) top left no-repeat; display: none" title="In your planner" id="plannerlabel2147">
-                                <!-- -->
-                            </div>
-                        </div>
-                    
-                        <div style="position: absolute; margin-top: 374px; width: 173px; height: 75px">
-                            <div style="position: absolute; width: 161px; height: 63px; padding: 5px 5px; background-color: #75ff62; border: 1px solid; border-color: #1dc705; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                The Vocaloid Panel
-                            </div>
-                        </div>
-                    
-                        <div style="position: absolute; margin-top: 449px; width: 173px; height: 50px">
-                            <div style="position: absolute; width: 161px; height: 38px; padding: 5px 5px; background-color: #75ff62; border: 1px solid; border-color: #1dc705; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                Randomness of the internets
-                            </div>
-                        </div>
-                    </div>
-            </div>
-            <div style="position: relative; float: left; margin-bottom: 25px">
-            
-                <div style="position: relative; width: 173px; height: 598px; border: 1px solid; border-color: #838383; background-image: url(img/calendar_bg2.gif); background-position: 0 -2px; border-left: 0px">
-                    
-                        <div style="position: absolute; margin-top: -1px; width: 173px; height: 200px">
-                            <div style="position: absolute; width: 161px; height: 188px; padding: 5px 5px; background-color: #4c4c4c; border: 1px solid; border-color: #000000; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #FFFFFF; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                /Closed/
-                            </div>
-                        </div>
-                    
-                        <div style="position: absolute; margin-top: 249px; width: 173px; height: 200px">
-                            <div style="position: absolute; width: 161px; height: 188px; padding: 5px 5px; background-color: #ffac62; border: 1px solid; border-color: #da6701; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                Ul-Zaorith Demo RPG
-                            </div>
-                        </div>
-                    
-                        <div style="position: absolute; margin-top: 449px; width: 173px; height: 150px">
-                            <div style="position: absolute; width: 161px; height: 138px; padding: 5px 5px; background-color: #4c4c4c; border: 1px solid; border-color: #000000; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #FFFFFF; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                The Room of Shame
-                            </div>
-                        </div>
-                    </div>
-                
-                
-            </div>
-            
-            <div style="position: relative; float: left; margin-bottom: 25px">
-            
-                <div style="position: relative; width: 173px; height: 598px; border: 1px solid; border-color: #838383; background-image: url(img/calendar_bg2.gif); background-position: 0 -2px; border-left: 0px">
-                    
-                        <div style="position: absolute; margin-top: -1px; width: 173px; height: 200px">
-                            <div style="position: absolute; width: 161px; height: 188px; padding: 5px 5px; background-color: #4c4c4c; border: 1px solid; border-color: #000000; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #FFFFFF; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                /Closed/
-                            </div>
-                        </div>
-                    
-                        <div style="position: absolute; margin-top: 249px; width: 173px; height: 200px">
-                            <div style="position: absolute; width: 161px; height: 188px; padding: 5px 5px; background-color: #ffac62; border: 1px solid; border-color: #da6701; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #3a3939; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                Tsukino-Con’s Card-gaming Room
-                            </div>
-                        </div>
-                        
-                        <div style="position: absolute; margin-top: 449px; width: 173px; height: 150px">
-                            <div style="position: absolute; width: 161px; height: 138px; padding: 5px 5px; background-color: #4c4c4c; border: 1px solid; border-color: #000000; opacity: .80; filter: alpha(opacity=80); -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; color: #FFFFFF; font-weight: bold; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; overflow: hidden">
-                                The Room of Great Shame
-                            </div>
-                        </div>
-                    </div>
-            </div>
-<?php endforeach; ?>
+<?php 
+    } 
+    endforeach; 
+?>
     </body>
 </html>
