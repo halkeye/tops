@@ -52,8 +52,54 @@
     color: #000000;
     background-color: #FB0000;
 }
+.jap_culture { 
+    color: #000000;
+    background-color: #9B9B9B;
+}
+/* Selectors */
+
+    .selectedSchedButton { background-image: url("img/stripe_055054a09acd87998a982c5166b45075.png"); font-weight: bold; color: white;}
+    #schedItemSelector { 
+        padding-left: 20%;
+        padding-right: 20%;
+    }
+    #schedItemSelector td { 
+        cursor: pointer;
+        padding: 2em;
+        width: 8em; 
+        height: 2em;
+        border-width: .7em;
+        border-style: solid;
+    }
 
 --></style>
+    <script type="text/javascript"><!--
+    var firstClick = 1;
+    function clearAllOnFirstClick() { 
+        if (!firstClick) { return; }
+        firstClick = 0;
+
+        jQuery("#schedItemSelector td").each( function(a, obj) {
+                var className = jQuery(obj).attr('class');
+                jQuery('.schedItem.'+className).addClass(className+'Offline').removeClass(className);
+        })
+    }
+    jQuery(document).ready(function() {
+            jQuery("#schedItemSelector td").toggle( function() {
+                clearAllOnFirstClick();
+                var obj = jQuery(this);
+                obj.addClass('selectedSchedButton');
+                var className = obj.attr('class').replace(' selectedSchedButton', '');
+                jQuery('.schedItem.'+className+'Offline').removeClass(className+'Offline').addClass(className);
+            }, function() {
+                var obj = jQuery(this);
+                obj.removeClass('selectedSchedButton');
+                var className = obj.attr('class').replace(' selectedSchedButton', '');
+                jQuery('.schedItem.'+className).addClass(className+'Offline').removeClass(className);
+            });
+
+    });
+    --></script>
 </head>
 <body>
 <?php
@@ -94,7 +140,7 @@ $data = array(
                 'length' => 2,
                 'type'   => array('performance', 'jap_culture'),
             ),
-            '1500' => array(
+            '1600' => array(
                 'name'   => 'AMV Contest',
                 'length' => 2,
                 'type'   => array('art_creative'),
@@ -218,7 +264,7 @@ foreach ($days as $day):
                     if ($timeOffset > 0) $timeOffset -= 1;
                     ?>
                     <div style="margin-top: <?php echo $timeOffset; ?>px">
-                        <div style="height: <?php echo $timeHeight; ?>px;" class="schedItem <?php echo $eventData['type'][0] ?>">
+                        <div style="height: <?php echo $timeHeight; ?>px;" class="schedItem <?php echo implode(' ', $eventData['type']) ?>">
                             <?php echo htmlentities($eventData['name']); ?>
                         </div>
                     </div>
@@ -241,5 +287,15 @@ foreach ($days as $day):
     } 
     endforeach; 
 ?>
+    <br style="clear:both" />
+    <table id="schedItemSelector">
+        <tr>
+            <td class="art_creative">Art / Creative</td>
+            <td class="game_contests">Game / Contests</td>
+            <td class="jap_culture">Jap. Culture</td>
+            <td class="performance">Performance</td>
+            <td class="academic">Academic</td>
+        </tr>
+    </table>
     </body>
 </html>
