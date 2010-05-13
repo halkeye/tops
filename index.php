@@ -1,5 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><?php
+    include('include.data.php');
+?><html><head>
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
     <title>Schedule</title>
     <script type="text/javascript" src="jquery-1.4.1.min.js"></script>
@@ -31,31 +32,17 @@
     opacity: 0.80;  -moz-opacity: 0.8; font-family: Tahoma, Verdana; font-size: 8pt; 
 }
 /* Types */
-
 .closed {
     background-color: #4c4c4c; 
     color: #EEEEEE;
 }
-.performance { 
-    color: #111111;
-    background-color: #FF7F47;
+<?php foreach ($eventTypes as $eventType): ?>
+.<?php echo htmlentities($eventType['nameKey']) ?> { 
+    color: <?php echo htmlentities($eventType['textColor']) ?>;
+    background-color: <?php echo htmlentities($eventType['bgColor']) ?>;
 }
-.game_contests { 
-    color: #3A3939;
-    background-color: #75FF62;
-}
-.art_creative { 
-    color: #000000;
-    background-color: #017CFD;
-}
-.academic { 
-    color: #000000;
-    background-color: #FB0000;
-}
-.jap_culture { 
-    color: #000000;
-    background-color: #9B9B9B;
-}
+<?php endforeach ?>
+
 /* Selectors */
 
     .selectedSchedButton { background-image: url("img/stripe_055054a09acd87998a982c5166b45075.png"); font-weight: bold; color: white;}
@@ -103,12 +90,6 @@
 </head>
 <body>
 <?php
-
-date_default_timezone_set('America/Los_Angeles');
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', true);
-$hourHeight = 50;
 
 $day1 = mktime(0,0,0,2,19,2010);
 
@@ -290,11 +271,9 @@ foreach ($days as $day):
     <br style="clear:both" />
     <table id="schedItemSelector">
         <tr>
-            <td class="art_creative">Art / Creative</td>
-            <td class="game_contests">Game / Contests</td>
-            <td class="jap_culture">Jap. Culture</td>
-            <td class="performance">Performance</td>
-            <td class="academic">Academic</td>
+<?php foreach ($eventTypes as $eventType): ?>
+            <td class="<?php echo htmlentities($eventType['nameKey']) ?>"><?php echo htmlentities($eventType['name']) ?></td>
+<?php endforeach ?>
         </tr>
     </table>
     </body>
