@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <title>Schedule</title>
+    <script type="text/javascript" src="jquery-1.4.1.min.js"></script>
+    <style text="text/css">
+    <!--
+    .selectedSchedButton { background-image: url("img/stripe_055054a09acd87998a982c5166b45075.png"); font-weight: bold; color: white;}
+    table.schedule th,table.schedule td { vertical-align: top; }
+    table.schedule td
+    {
+        border-width: .7em;
+        border-style: solid;
+    }
+
+    .performance { 
+        border-color: #FF7F47;
+        border-top-color: #FF7F47 !important;
+        border-left-color: #FF7F47 !important;
+    }
+    .game_contests { 
+        border-color: #07FE00;
+        border-bottom-color: #07FE00 !important;
+        border-right-color: #07FE00 !important;
+    }
+    .academic { 
+        border-color: #FB0000;
+        border-bottom-color: #FB0000 !important;
+        border-right-color: #FB0000 !important;
+    }
+    .jap_culture { 
+        border-color: #DE1CD2;
+        border-bottom-color: #DE1CD2 !important;
+        border-right-color: #DE1CD2 !important;
+    }
+    .art_creative { 
+        border-color: #017CFD;
+        border-bottom-color: #017CFD !important;
+        border-right-color: #017CFD !important;
+    }
+
+    #schedItemSelector { 
+        padding-left: 20%;
+        padding-right: 20%;
+    }
+    #schedItemSelector td { 
+        cursor: pointer;
+        padding: 2em;
+        width: 8em; 
+        height: 2em;
+        border-width: .7em;
+        border-style: solid;
+    }
+    -->
+    </style>
+    <script type="text/javascript"><!--
+    var firstClick = 1;
+    function clearAllOnFirstClick() { 
+        if (!firstClick) { return; }
+        firstClick = 0;
+
+        jQuery("#schedItemSelector td").each( function(a, obj) {
+                var className = jQuery(obj).attr('class');
+                jQuery('.schedule td.'+className).addClass(className+'Offline').removeClass(className);
+        })
+    }
+    jQuery(document).ready(function() {
+            jQuery("#schedItemSelector td").toggle( function() {
+                clearAllOnFirstClick();
+                var obj = jQuery(this);
+                obj.addClass('selectedSchedButton');
+                var className = obj.attr('class').replace(' selectedSchedButton', '');
+                jQuery('.schedule td.'+className+'Offline').removeClass(className+'Offline').addClass(className);
+            }, function() {
+                var obj = jQuery(this);
+                obj.removeClass('selectedSchedButton');
+                var className = obj.attr('class').replace(' selectedSchedButton', '');
+                jQuery('.schedule td.'+className).addClass(className+'Offline').removeClass(className);
+            });
+
+    });
+    --></script>
+</head>
+<body>
+    <table style="text-align: left; width: 100%;" border="0" cellpadding="2" cellspacing="2" class="schedule">
+      <tbody>
+        <tr>
+          <th class="dateHeader">Friday Aug 13</th>
+          <th class="roomHeader">Main Events 1</th>
+          <th class="roomHeader">Panel Room 1</th>
+          <th class="roomHeader">Panel Room 2</th>
+        </tr>
+        <tr>
+          <th class="timeHeader">12:00 pm -<br />1:00 pm</th>
+          <td class="performance game_contests">The Final Fantasy<br />Fight Tournament</td>
+          <td class="performance academic">Anime Debate</td>
+          <td class="performance game_contests">Anime Speed Dating</td>
+        </tr>
+        <tr>
+          <th class="timeHeader">1:00 pm - <br />2:00 pm</th>
+          <td class="game_contests">The Gauntlet -<br />Round 1</td>
+          <td class="performance game_contests">Cosplay Swimsuit<br />Contest<br /></td>
+          <td class="japCulture academic">The History of Manga</td>
+        </tr>
+        <tr>
+          <th class="timeHeader">2:00 pm - <br />3:00 pm</th>
+          <td class="performance">Charity<br />Auction<br /></td>
+          <td class="academic">Anime Physics</td>
+          <td class="performance game_contests">Anime Idol</td>
+        </tr>
+        <tr>
+          <th class="timeHeader">3:00 pm - <br />4:00 pm</th>
+          <td class="performance jap_culture">The Beautiful <br />Losers - Concert</td>
+          <td class="game_contests">Magic The Gathering<br />Draft Tournament</td>
+          <td class="game_contests">Left for Dead 2 - <br />Tournament</td>
+        </tr>
+        <tr>
+          <th class="timeHeader">4:00 pm - <br />5:00 pm</th>
+          <td class="art_creative game_contests">AMV Contest</td>
+          <td class="art_creative academic">King for a Day - <br />Cosplay guide</td>
+          <td class="performance game_contests">Cosplay Chess</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <table id="schedItemSelector">
+        <tr>
+            <td class="art_creative">Art / Creative</td>
+            <td class="game_contests">Game / Contests</td>
+            <td class="jap_culture">Jap. Culture</td>
+            <td class="performance">Performance</td>
+            <td class="academic">Academic</td>
+        </td>
+    </tr>
+    </body>
+</html>

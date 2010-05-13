@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><?php
     include('include.data.php');
 ?><html><head>
-    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <title>Schedule</title>
     <script type="text/javascript" src="jquery-1.4.1.min.js"></script>
     <style text="text/css">
@@ -40,6 +40,8 @@
 .<?php echo htmlentities($eventType['nameKey']) ?> { 
     color: <?php echo htmlentities($eventType['textColor']) ?>;
     background-color: <?php echo htmlentities($eventType['bgColor']) ?>;
+    border-color: <?php echo htmlentities($eventType['textColor']) ?>;
+    border-width: <?php echo $borderWidth; ?>px;
 }
 <?php endforeach ?>
 
@@ -90,130 +92,6 @@
 </head>
 <body>
 <?php
-
-$day1 = mktime(0,0,0,2,19,2010);
-
-$data = array(
-    'Main Events 1' => array(
-        $day1 => array(
-            '1000' => array(
-                'name'   => 'Gavin says its closed sucka',
-                'length' => 3,
-                'type'   => array('closed'),
-            ),
-            '1200' => array(
-                'name'   => 'The Final Fantasy Fight Tournament',
-                'length' => 2,
-                'type'   => array('performance', 'game_contests'),
-            ),
-            '1300' => array(
-                'name' => 'The Gauntlet - Round 1',
-                'length' => 2,
-                'type'   => array('game_contests'),
-            ),
-            '1400' => array(
-                'name'   => 'Charity Auction',
-                'length' => 2,
-                'type'   => array('performance'),
-            ),
-            '1500' => array(
-                'name'   => 'The Beautiful Losers - Concert',
-                'length' => 2,
-                'type'   => array('performance', 'jap_culture'),
-            ),
-            '1600' => array(
-                'name'   => 'AMV Contest',
-                'length' => 2,
-                'type'   => array('art_creative'),
-            ),
-        ),
-    ),
-    'Panel Room 1' => array(
-        $day1 => array(
-            '1000' => array(
-                'name'   => 'Dolphin claims this room',
-                'length' => 3,
-                'type'   => array('closed'),
-            ),
-            '1200' => array(
-                'name'   => 'Anime Debate',
-                'length' => 2,
-                'type'   => array('performance', 'academic'),
-            ),
-            '1300' => array(
-                'name'   => 'Cosplay Swimsuit Contest',
-                'length' => 2,
-                'type'   => array('performance', 'game_contests'),
-            ),
-            '1400' => array(
-                'name'   => 'Anime Physics',
-                'length' => 2,
-                'type'   => array('academic'),
-            ),
-            '1500' => array(
-                'name'   => 'Magic The Gathering - Draft Tournament',
-                'length' => 2,
-                'type'   => array('game_contests'),
-            ),
-            '1500' => array(
-                'name'   => 'King for a Day - Cosplay Guide',
-                'length' => 2,
-                'type'   => array('art_creative'),
-            ),
-        ),
-    ),
-    'Panel Room 2' => array(
-        $day1 => array(
-            '1000' => array(
-                'name'   => 'this one is up for grabs',
-                'length' => 4,
-                'type'   => array('closed'),
-            ),
-            '1200' => array(
-                'name'   => 'The history of manga',
-                'length' => 2,
-                'type'   => array('academic'),
-            ),
-            '1300' => array(
-                'name'   => 'Anime Idol',
-                'length' => 2,
-                'type'   => array('performance', 'game_contests'),
-            ),
-            '1400' => array(
-                'name'   => 'Left for Dead 2 - Tournament',
-                'length' => 2,
-                'type'   => array('game_contests'),
-            ),
-            '1500' => array(
-                'name'   => 'Cosplay Chess',
-                'length' => 2,
-                'type'   => array('performance', 'game_contests'),
-            ),
-        ),
-    ),
-);
-
-$hourData = array();
-$days = array();
-foreach (array_keys($data) as $room)
-{
-    foreach (array_keys($data[$room]) as $day)
-    {
-        if (!isset($hourData["$day"])) { $hourData["$day"] = array('max'=>0, 'min'=> 2500); }
-        $hourData["$day"]['max'] = (int) @max($hourData[$day]['max'], max(array_keys($data[$room][$day])));
-        $hourData["$day"]['min'] = (int) @min($hourData[$day]['min'], min(array_keys($data[$room][$day])));
-        array_push($days, $day);
-    }
-    $matches = array();
-    preg_match('/(\d{2})(\d{2})/', $hourData[$day]['max'], $matches);
-    list($junk, $hourData[$day]['maxHour'], $hourData[$day]['maxMin']) = $matches;
-    preg_match('/(\d{2})(\d{2})/', $hourData[$day]['min'], $matches);
-    list($junk, $hourData[$day]['minHour'], $hourData[$day]['minMin']) = $matches;
-}
-$days = array_unique($days);
-$rooms = array_keys($data);
-sort($rooms);
-
 foreach ($days as $day):
 ?>
     <h3><?php echo date('l jS F Y', $day); ?></h3><br />
