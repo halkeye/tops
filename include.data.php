@@ -10,7 +10,7 @@ function getDBH()
 {
 
     $config = parse_ini_file('.my.cnf');
-    $link = mysql_connect('localhost', $config['user'], $config['password']);
+    $link = mysql_connect('localhost', $config['user'], @$config['password']);
     if (!$link) { die('Could not connect: ' . mysql_error()); }
     $result = mysql_select_db('tops',$link);
     if (!$result) { die('Error selecting db: ' . mysql_errno($link) . ": " . mysql_error($link)); }
@@ -25,7 +25,7 @@ while ($row = mysql_fetch_assoc($result)) {
 }
 
 
-$result = mysql_query("select e.*,r.name as roomName from events e left join rooms r on (e.roomId=r.id)", $link);
+$result = mysql_query("SELECT e.*,r.name AS roomName FROM events e LEFT JOIN rooms r ON (e.roomId=r.id)", $link);
 if (!$result) { die('Invalid query: ' . mysql_errno($link) . ": " . mysql_error($link)); }
 
 while ($row = mysql_fetch_assoc($result)) {
