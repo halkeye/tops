@@ -1,0 +1,93 @@
+body {
+	width: 980px;
+	margin: 0 auto;
+    font-family: Tahoma, Verdana;
+}
+.clear {
+    clear: both;
+}
+
+.small {
+    font-size: 8pt;
+}
+
+.roomHeader {
+    float: left;
+    text-align: center;
+    margin-bottom: 5px;
+    width: 163px;
+    padding: 0px 5px
+}
+
+.roomBlock {
+    position: relative;
+    width: 173px;
+    border: 1px solid;
+    border-color: #838383;
+    background-image: url(../img/calendar_bg2.gif);
+    background-position: 0 -2px;
+}
+
+.timeHeader {
+    position: absolute;
+    margin-top: 0;
+    width: 50px;
+    text-align: left;
+    margin-left: 0;
+}
+
+.timeBlock {
+    position: absolute;
+    top: 0;
+    width: 50px;
+    border-color: #838383;
+    background-image: url(../img/calendar_bg2.gif);
+    font-family: Tahoma, Verdana;
+    font-size: 8pt;
+    color: #838383;
+    border-top: 1px solid;
+    border-color: #838383;
+    background-position: 0 -2px
+}
+
+.schedItem {
+    position: absolute;
+    width: 161px;
+    padding: 5px 5px;
+    border: 1px solid;
+    font-weight: bold;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    overflow: hidden;
+    border-color: #000000;
+    opacity: 0.80;
+    -moz-opacity: 0.8;
+    font-size: 8pt;
+}
+
+/* Types */
+.closed {
+    background-color: #4c4c4c;
+    color: #EEEEEE;
+}
+
+.selectedSchedButton {
+    background-image: url("img/stripe_055054a09acd87998a982c5166b45075.png");
+    font-weight: bold;
+    color: white;
+}
+
+#schedItemSelector {
+    padding-left: 20%;
+    padding-right: 20%;
+}
+
+#schedItemSelector td {
+    cursor: pointer;
+    padding: 2em;
+    width: 8em;
+    height: 2em;
+    border-width: .7em;
+    border-style: solid;
+}
