@@ -3,8 +3,18 @@ define('TOPS_PAGE',1);
 session_start();
 $title = "Access Denied";
 $baseURL = "../";
-include_once('../header.php');
-?>
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+ 
+<head> 
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" /> 
+<title>Access Denied</title> 
+</head> 
+ 
+<body> 
+<div style="text-align: center">
+    <h1>Access Denied</h1> 
+ 
     <img src="<?php echo $baseURL; ?>img/accessDenied.gif" alt="accessDenied" />
 
 	<p>
@@ -16,5 +26,7 @@ include_once('../header.php');
         </ul>
     <?php endif ?>
     </p>
-<?
-include_once('../footer.php');
+</div> 
+ 
+</body> 
+</html> 
