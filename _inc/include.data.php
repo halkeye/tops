@@ -1,22 +1,9 @@
 <?php
-date_default_timezone_set('America/Los_Angeles');
-error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('html_errors', true);
+include_once(dirname(__FILE__) . '/common.php');
 $hourHeight = 50;
 $borderWidth = 1;
 
-function getDBH()
-{
-
-    $config = parse_ini_file('.my.cnf');
-    $link = mysql_connect('localhost', $config['user'], @$config['password']);
-    if (!$link) { die('Could not connect: ' . mysql_error()); }
-    $result = mysql_select_db('tops',$link);
-    if (!$result) { die('Error selecting db: ' . mysql_errno($link) . ": " . mysql_error($link)); }
-    return $link;
-}
-$link = getDBH();
+$link = DBH::getInstance()->getHandle();
 $result = mysql_query("SELECT * FROM eventTypes", $link);
 if (!$result) { die('Invalid query: ' . mysql_errno($link) . ": " . mysql_error($link)); }
 
