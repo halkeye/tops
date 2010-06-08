@@ -25,7 +25,7 @@ while ($row = mysql_fetch_assoc($result)) {
 }
 
 
-$result = mysql_query("SELECT e.*,r.name AS roomName FROM events e LEFT JOIN rooms r ON (e.roomId=r.id)", $link);
+$result = mysql_query("SELECT e.*,r.name AS roomName,d.day as eventDate FROM events e JOIN rooms r ON (e.roomId=r.id) JOIN days d ON (e.dayId=d.id)", $link);
 if (!$result) { die('Invalid query: ' . mysql_errno($link) . ": " . mysql_error($link)); }
 
 while ($row = mysql_fetch_assoc($result)) {

@@ -1,4 +1,5 @@
-create table if not exists  eventTypes (
+DROP TABLE IF EXISTS eventTypes;
+CREATE TABLE IF NOT EXISTS eventTypes (
     id int primary key auto_increment,
     name varchar(255), 
     nameKey varchar(255), 
@@ -6,15 +7,23 @@ create table if not exists  eventTypes (
     bgColor varchar(10)
 );
 
-create table if not exists  rooms (
+DROP TABLE IF EXISTS days;
+CREATE TABLE IF NOT EXISTS days (
     id int primary key auto_increment,
-    name varchar(255)
+    day date not null default '0000-00-00'
 );
 
-create table if not exists events (
+DROP TABLE IF EXISTS rooms;
+CREATE TABLE IF NOT EXISTS rooms (
+    id int primary key auto_increment,
+    name varchar(255) not null default ''
+);
+
+DROP TABLE IF EXISTS events;
+CREATE TABLE IF NOT EXISTS events (
     id int primary key auto_increment,
     roomId int not null default 0,
-    eventDate date not null default '0000-00-00',
+    dayId int not null default 0,
     time varchar(4) not null default '0000',
     name varchar(255) not null default '', 
     length int not null default 0,
