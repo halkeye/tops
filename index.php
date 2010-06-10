@@ -1,81 +1,103 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<?php include_once('_inc/include.data.php'); ?>
-<html>
-<head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type">
-    <title>Schedule</title>
-    <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
-    <link rel="stylesheet" href="css/style.css" />
-    <style text="text/css">
-        <?php foreach ($eventTypes as $eventType): ?>
-            .<?php echo htmlentities($eventType['nameKey']) ?> { 
-                color: <?php echo htmlentities($eventType['textColor']) ?>;
-                background-color: <?php echo htmlentities($eventType['bgColor']) ?>;
-                border-color: <?php echo htmlentities($eventType['textColor']) ?>;
-                border-width: <?php echo $borderWidth; ?>px;
-            }
-        <?php endforeach ?>
-    </style>
-</head>
-<body>
-    <?php foreach ($days as $day): ?>
-        <h3><?php echo date('l jS F Y', $day); ?></h3><br />
-        <?php $totalHours = (($hourData[$day]['max']-$hourData[$day]['min'])/100); ?>
-    
-        <div style="margin-left: 25px">
-            <?php foreach ($rooms as $room): ?>
-                <div class="small roomHeader"><?php echo htmlentities($room) ?></div>
-            <?php endforeach ?>
-        </div>
-        <div class="clear"></div>
-   
-        <?php foreach ($rooms as $room) 
-        { ?>
-            <div style="position: relative; float: left; margin-bottom: 25px">
-                <div class="roomBlock" style="height: <?php echo (($totalHours+1)*$hourHeight)-2 ?>px; <?php if ($room == $rooms[0]): ?> margin-left: 50px<?php endif ?>">
-                <?php 
-                    $timeOffset = 0;
-                    foreach ($data[$room][$day] as $hour => $eventData) 
-                    {
-                        $timeHeight = floor($hourHeight/2)*$eventData['length']-12 /* 12 = padding + border */;
-                        $timeOffset = -1;
-                        if ($hour != $hourData[$day]['min'])
-                            $timeOffset = $hourHeight*floor(($hour-$hourData[$day]['min'])/100);
-                        if ($timeOffset > 0) $timeOffset -= 1;
-                        ?>
-                        <div style="margin-top: <?php echo $timeOffset; ?>px">
-                            <div style="height: <?php echo $timeHeight; ?>px;" class="schedItem <?php echo implode(' ', $eventData['type']) ?>">
-                                <?php echo htmlentities($eventData['name']); ?>
-                            </div>
-                        </div>
-                    <?php
-                    } 
-                ?>
-               </div>
-                
-                <?php if ($room == $rooms[0]): ?>
-                    <div class="timeBlock" style="height: <?php echo (($totalHours+1)*$hourHeight) ?>px">
-                        <?php $count=0; foreach (range($hourData[$day]['minHour'], $hourData[$day]['maxHour']) as $hour): ?>
-                        <div class="timeHeader" style="margin-top: <?php echo $hourHeight*$count++ ?>px;">
-                            <?php echo date('g:i A', mktime($hour,0)); ?>
-                        </div>
-                        <?php endforeach ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php 
-        }
-        ?>
-    <?php endforeach; ?>
-    <br style="clear:both" />
-    <table id="schedItemSelector">
-        <tr>
-            <?php foreach ($eventTypes as $eventType): ?>
-                <td class="<?php echo htmlentities($eventType['nameKey']) ?>"><?php echo htmlentities($eventType['name']) ?></td>
-        <?php endforeach ?>
-        </tr>
-    </table>
-</body>
-</html>
+<?php
+
+/**
+ * The directory in which your application specific resources are located.
+ * The application directory must contain the bootstrap.php file.
+ *
+ * @see  http://kohanaframework.org/guide/about.install#application
+ */
+$application = 'application';
+
+/**
+ * The directory in which your modules are located.
+ *
+ * @see  http://kohanaframework.org/guide/about.install#modules
+ */
+$modules = 'modules';
+
+/**
+ * The directory in which the Kohana resources are located. The system
+ * directory must contain the classes/kohana.php file.
+ *
+ * @see  http://kohanaframework.org/guide/about.install#system
+ */
+$system = 'system';
+
+/**
+ * The default extension of resource files. If you change this, all resources
+ * must be renamed to use the new extension.
+ *
+ * @see  http://kohanaframework.org/guide/about.install#ext
+ */
+define('EXT', '.php');
+
+/**
+ * Set the PHP error reporting level. If you set this in php.ini, you remove this.
+ * @see  http://php.net/error_reporting
+ *
+ * When developing your application, it is highly recommended to enable notices
+ * and strict warnings. Enable them by using: E_ALL | E_STRICT
+ *
+ * In a production environment, it is safe to ignore notices and strict warnings.
+ * Disable them by using: E_ALL ^ E_NOTICE
+ *
+ * When using a legacy application with PHP >= 5.3, it is recommended to disable
+ * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
+ */
+error_reporting(E_ALL | E_STRICT);
+
+/**
+ * End of standard configuration! Changing any of the code below should only be
+ * attempted by those with a working knowledge of Kohana internals.
+ *
+ * @see  http://kohanaframework.org/guide/using.configuration
+ */
+
+// Set the full path to the docroot
+define('DOCROOT', realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR);
+
+// Make the application relative to the docroot
+if ( ! is_dir($application) AND is_dir(DOCROOT.$application))
+	$application = DOCROOT.$application;
+
+// Make the modules relative to the docroot
+if ( ! is_dir($modules) AND is_dir(DOCROOT.$modules))
+	$modules = DOCROOT.$modules;
+
+// Make the system relative to the docroot
+if ( ! is_dir($system) AND is_dir(DOCROOT.$system))
+	$system = DOCROOT.$system;
+
+// Define the absolute paths for configured directories
+define('APPPATH', realpath($application).DIRECTORY_SEPARATOR);
+define('MODPATH', realpath($modules).DIRECTORY_SEPARATOR);
+define('SYSPATH', realpath($system).DIRECTORY_SEPARATOR);
+
+// Clean up the configuration vars
+unset($application, $modules, $system);
+
+if (file_exists('install'.EXT))
+{
+	// Load the installation check
+	return include 'install'.EXT;
+}
+
+// Load the base, low-level functions
+require SYSPATH.'base'.EXT;
+
+// Load the core Kohana class
+require SYSPATH.'classes/kohana/core'.EXT;
+
+if (is_file(APPPATH.'classes/kohana'.EXT))
+{
+	// Application extends the core
+	require APPPATH.'classes/kohana'.EXT;
+}
+else
+{
+	// Load empty core extension
+	require SYSPATH.'classes/kohana'.EXT;
+}
+
+// Bootstrap the application
+require APPPATH.'bootstrap'.EXT;
