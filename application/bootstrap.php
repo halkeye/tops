@@ -77,7 +77,7 @@ Kohana::modules(array(
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'pagination' => MODPATH.'pagination', // Paging of results
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
-	'openid'  => MODPATH.'openid',  // User guide and API documentation
+	// 'openid'  => MODPATH.'openid',  // User guide and API documentation
 	'tops'  => MODPATH.'tops',  // User guide and API documentation
 	));
 
@@ -85,12 +85,6 @@ Kohana::modules(array(
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
-Route::set('gavin', 'gavin')
-    ->defaults(array(
-		'controller' => 'static',
-        'action' => 'css',
-        'id' => 'a1.css',
-	));
 Route::set('static', 'static/<action>/<filename>.<ext>',array('ext'=>'[a-zA-Z0-9]+'))
     ->defaults(array(
 		'controller' => 'static',
@@ -98,7 +92,7 @@ Route::set('static', 'static/<action>/<filename>.<ext>',array('ext'=>'[a-zA-Z0-9
 	));
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
-		'controller' => 'admin',
+		'controller' => 'schedule',
 		'action'     => 'index',
 	));
 
