@@ -8,7 +8,7 @@ class controller_static extends Controller
 
         $file = Kohana::find_file('views/css', basename($key, '.css'), 'css');
         if (!$file)
-            throw Kohana_exception("No such file or directory");
+            throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$filename.$ext"));
         header('Content-Type: text/css');
         readfile($file);
         exit();
@@ -21,7 +21,7 @@ class controller_static extends Controller
         {
             $file = Kohana::find_file('views/js', basename($key, '.js'), 'js');
             if (!$file)
-                throw Kohana_exception("No such file or directory");
+                throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$key.js"));
             readfile($file);
         }
 
@@ -32,6 +32,8 @@ class controller_static extends Controller
         //if (IN_PRODUCTION && self::check(300) === FALSE) self::set(300);
         $info = pathinfo($filename);
         $file = Kohana::find_file('views/images', basename($info['basename']), $ext);
+        if (!$file)
+            throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$filename.$ext"));
 
         if ($ext == 'png')
             header('Content-Type: Content-Type: image/png');
