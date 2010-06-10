@@ -39,7 +39,7 @@ $menuLinks = array(
 <body>
     <div id="container">
         <div id="user_login">
-            <p><?php echo $account->fname; ?> <?php echo $account->lname; ?> (<?php echo $account->email; ?>)</p>
+            <p><?php echo htmlentities($account->displayName); ?> (<?php echo htmlentities($account->email); ?>) (<?php echo html::anchor('auth/logout', 'Logout') ?>)</p>
         </div>
 
         <div id="header">
@@ -78,5 +78,14 @@ $menuLinks = array(
             Design by: stt@sfu.ca
         </div>
     </div>
+<script type="text/javascript">
+  var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
+  document.write(unescape("%3Cscript src='" + rpxJsHost +
+"rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+  RPXNOW.overlay = true;
+  RPXNOW.language_preference = 'en';
+</script>
 </body>
 </html>

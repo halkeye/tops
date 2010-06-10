@@ -77,6 +77,7 @@ Kohana::modules(array(
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'pagination' => MODPATH.'pagination', // Paging of results
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+	'openid'  => MODPATH.'openid',  // User guide and API documentation
 	'tops'  => MODPATH.'tops',  // User guide and API documentation
 	));
 

@@ -10,21 +10,22 @@ class controller_admin extends Controller_Template
         $ret = parent::before();
 
         $this->session = Session::instance();
+        if ($this->request->action == 'rpx')
+            return $ret;
+
         $this->requireAuth();
 
-        #$this->requireAdmin();
         $this->template->currentPage = str_replace(array('Edit', 'Create', 'Save'), '', $this->request->action);
         $this->template->title = "index";
         $this->template->account = new StdClass;
-        $this->template->account->fname = "Gavin";
-        $this->template->account->lname = "Mogan";
-        $this->template->account->email = "halkeye@gmail.com";
+        $this->template->account->displayName = $this->session->get('account_displayName');
+        $this->template->account->email = $this->session->get('account_email');
         return $ret;
     }
 
     function action_index()
     {
-        $this->template->content = 'hello, world!';
+		$this->template->content = View::factory('admin/index');
     }
     function action_rooms()
     {
@@ -44,11 +45,10 @@ class controller_admin extends Controller_Template
         if (!$this->session->get('account_id'))
         {
             $this->session->set('redirected_from', $this->request->uri);
-            $this->request->redirect('openid/tryAuth');
+            $this->request->redirect('https://tops.rpxnow.com/openid/v2/signin?token_url='.urlencode(url::site('auth/rpx', 'http')));
             return false;
         }
         $email = $this->session->get('account_email');
-        $email = 'halkeye@gmail.com';
 
         $emails = Kohana::config("googleAuth.emails");
         if (isset($emails[$email]) && $emails[$email])
@@ -56,8 +56,7 @@ class controller_admin extends Controller_Template
             return TRUE;
         }
 
-        $this->request->redirect('system/accessDenied')l;
+        $this->request->redirect('system/accessDenied');
         return false;
     }
-
 }

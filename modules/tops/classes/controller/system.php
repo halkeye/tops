@@ -1,7 +1,7 @@
 <?php
-class System_Controller extends Controller_Core
+class controller_system extends Controller
 {
-    public function accessDenied()
+    public function action_accessDenied()
     {
         $image = url::site('static/img/accessDenied.gif');
 
@@ -28,7 +28,7 @@ class System_Controller extends Controller_Core
 <img src="$image" alt="accessDenied" />
 
 <p>Your login is not permitted in this section.</p>
-<p>Let the admin know what your email address$email is.</p>
+<p>Let the admin know what your email$email address is.</p>
 </div> 
 </body> 
 </html> 
