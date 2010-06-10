@@ -250,7 +250,7 @@ class Auth_Yadis_Yadis {
      * If Auth_Yadis_CURL_OVERRIDE is defined, this method will always
      * return a {@link Auth_Yadis_PlainHTTPFetcher}.
      */
-    function getHTTPFetcher($timeout = 20)
+    static function getHTTPFetcher($timeout = 20)
     {
         if (Auth_Yadis_Yadis::curlPresent() &&
             (!defined('Auth_Yadis_CURL_OVERRIDE'))) {
@@ -261,7 +261,7 @@ class Auth_Yadis_Yadis {
         return $fetcher;
     }
 
-    function curlPresent()
+    static function curlPresent()
     {
         return function_exists('curl_init');
     }
@@ -317,7 +317,7 @@ class Auth_Yadis_Yadis {
      * Auth_Yadis_Yadis, depending on whether the discovery
      * succeeded.
      */
-    function discover($uri, &$fetcher,
+    static function discover($uri, &$fetcher,
                       $extra_ns_map = null, $timeout = 20)
     {
         $result = new Auth_Yadis_DiscoveryResult($uri);

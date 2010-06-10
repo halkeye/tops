@@ -203,7 +203,7 @@ class Auth_OpenID {
      *
      * @access private
      */
-    function ensureDir($dir_name)
+    static function ensureDir($dir_name)
     {
         if (is_dir($dir_name) || @mkdir($dir_name)) {
             return true;
@@ -241,7 +241,7 @@ class Auth_OpenID {
      *
      * @access private
      */
-    function arrayGet($arr, $key, $fallback = null)
+    static function arrayGet($arr, $key, $fallback = null)
     {
         if (is_array($arr)) {
             if (array_key_exists($key, $arr)) {
@@ -412,7 +412,7 @@ class Auth_OpenID {
      * @return mixed $new_url The URL after normalization, or null if
      * $url was malformed.
      */
-    function normalizeUrl($url)
+    static function normalizeUrl($url)
     {
         @$parsed = parse_url($url);
 
@@ -486,7 +486,7 @@ class Auth_OpenID {
         return $b;
     }
 
-    function urldefrag($url)
+    static function urldefrag($url)
     {
         $parts = explode("#", $url, 2);
 
@@ -524,7 +524,7 @@ class Auth_OpenID {
      *
      * @param string $format_string The sprintf format for the message
      */
-    function log($format_string)
+    static function log($format_string)
     {
         $args = func_get_args();
         $message = call_user_func_array('sprintf', $args);

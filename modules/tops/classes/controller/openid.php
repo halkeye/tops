@@ -18,14 +18,11 @@ include Kohana::find_file('libraries','Auth/OpenID/PAPE');
 
 include Kohana::find_file('libraries','Auth/OpenID/AX');
 
-class Openid_Controller extends Controller_Core
+
+class controller_openid extends Controller
 {
-    static private $pape_policy_uris = array(
-            PAPE_AUTH_MULTI_FACTOR_PHYSICAL,
-            PAPE_AUTH_MULTI_FACTOR,
-            PAPE_AUTH_PHISHING_RESISTANT
-    );
-    public function tryAuth()
+
+    public function action_tryAuth()
     {
         $this->session = Session::instance();
         $openid = "https://www.google.com/accounts/o8/id";
@@ -70,7 +67,7 @@ class Openid_Controller extends Controller_Core
                 die("Could not redirect to server: " . $redirect_url->message);
             } else {
                 // Send redirect.
-                header("Location: ".$redirect_url);
+                $this->request->redirect($redirect_url);
             }
         } else {
             // Generate form markup and render it.
@@ -83,14 +80,13 @@ class Openid_Controller extends Controller_Core
             if (Auth_OpenID::isFailure($form_html)) {
                 die("Could not redirect to server: " . $form_html->message);
             } else {
-                print $form_html;
+                $this->request->response = $form_html;
             }
         }
     }
 
-    public function finishAuth()
+    public function action_finishAuth()
     {
-
         $consumer = $this->getConsumer();
 
         // Complete the authentication process using the server's
@@ -135,7 +131,7 @@ class Openid_Controller extends Controller_Core
         url::redirect($location);
     }
 
-    function &getStore() {
+    function getStore() {
         static $store;
         if (!isset($store))
         {
@@ -147,8 +143,7 @@ class Openid_Controller extends Controller_Core
              */
             $store_path = "/tmp/_php_consumer_test";
 
-            if (!file_exists($store_path) &&
-                !mkdir($store_path)) {
+            if (!file_exists($store_path) && !mkdir($store_path)) {
                 print "Could not create the FileStore directory '$store_path'. ".
                     " Please check the effective permissions.";
                 exit(0);
@@ -159,14 +154,13 @@ class Openid_Controller extends Controller_Core
         return $store;
     }
 
-    function &getConsumer() {
+    function getConsumer() {
         /**
          * Create a consumer object using the store object created
          * earlier.
          */
         $store = $this->getStore();
-        $consumer =& new Auth_OpenID_Consumer($store);
-        return $consumer;
+        return new Auth_OpenID_Consumer($store);
     }
 
     function getScheme() {
