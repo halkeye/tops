@@ -10,8 +10,6 @@ class controller_admin extends Controller_Template
         $ret = parent::before();
 
         $this->session = Session::instance();
-        if ($this->request->action == 'rpx')
-            return $ret;
 
         $this->requireAuth();
 
@@ -45,7 +43,7 @@ class controller_admin extends Controller_Template
         if (!$this->session->get('account_id'))
         {
             $this->session->set('redirected_from', $this->request->uri);
-            $this->request->redirect('https://tops.rpxnow.com/openid/v2/signin?token_url='.urlencode(url::site('auth/rpx', 'http')));
+            $this->request->redirect('auth/login');
             return false;
         }
         $email = $this->session->get('account_email');
