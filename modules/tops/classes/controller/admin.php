@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') OR die('No direct access allowed.');
 
 class controller_admin extends Controller_Template 
 {
@@ -25,10 +25,17 @@ class controller_admin extends Controller_Template
     {
 		$this->template->content = View::factory('admin/index');
     }
+
     function action_rooms()
     {
-        $this->template->content = 'hello, world!';
+        $rooms = ORM::factory('room')
+            ->find_all();
+
+        $this->template->content = View::factory('admin/roomList', array(
+                'rooms' => $rooms,
+        ));
     }
+
     function action_days()
     {
         $this->template->content = 'hello, world!';
