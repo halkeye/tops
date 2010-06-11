@@ -1,5 +1,7 @@
 <?php
 
+require_once Kohana::find_file('libraries/lightopenid', 'openid');
+
 class controller_auth extends Controller
 {
     protected $session;
@@ -8,6 +10,80 @@ class controller_auth extends Controller
     {
         $this->session = Session::instance();
         return parent::before();
+    }
+
+    function action_login()
+    {
+        $this->request->response = View::factory('auth/login');
+    }
+    
+    function action_tryAuth()
+    {
+        $type = $_POST['type'];
+        if(isset($_GET['openid_mode']) && $_GET['openid_mode'] == 'cancel') 
+        {
+            $this->request->redirect('auth/login');
+            return;
+        }
+
+
+        $openid = new LightOpenID;
+        $openid->returnUrl = url::site('auth/finishAuth', TRUE);
+        $openid->required = array('namePerson/friendly', 'contact/email', 'namePerson/first', 'namePerson/last', 'namePerson');
+        if ($type == 'google')
+        {
+            $openid->identity = 'https://www.google.com/accounts/o8/id';
+            $url = $openid->authUrl(TRUE);
+        }
+        else if ($type == 'yahoo')
+        {
+            $openid->identity = 'https://me.yahoo.com';
+        }
+        else
+        {
+            /* FIXME - flash error message - no type provided*/
+            $this->request->required('auth/login');
+        }
+
+        if (!isset($url)) $url = $openid->authUrl();
+        $this->request->redirect($url);
+    }
+
+    function action_finishAuth()
+    {
+        $openid = new LightOpenID;
+        if (!$openid->validate())
+        {
+            $this->request->redirect('auth/login');
+            return;
+        }
+        $this->session->regenerate();
+        $this->session->set('account_id', $_GET['openid_identity']);
+        $attr = $openid->getAttributes();
+
+        if (@$attr['contact/email'])
+            $this->session->set('account_email', $attr['contact/email']);
+
+        if (@$attr['namePerson/first'] && @$attr['namePerson/last'])
+            $this->session->set('account_displayName', implode(' ', array(@$attr['namePerson/first'], @$attr['namePerson/last'])));
+        else if (@$attr['namePerson'])
+            $this->session->set('account_displayName', $attr['namePerson']);
+        else if (@$attr['namePerson/friendly'])
+            $this->session->set('account_displayName', $attr['namePerson/friendly']);
+
+        if (!($this->session->get('account_email') && $this->session->get('account_displayName')))
+        {
+            echo "<br/><pre><xmp>";
+            var_dump($openid);
+            var_dump($openid->getAttributes());
+            echo "</xmp></pre>";
+            die();
+        }
+
+        $location = $this->session->get('redirected_from');
+        $this->session->delete('redirected_from');
+        if (!$location) $location = "admin/index";
+        $this->request->redirect($location);
     }
     
     function action_rpx()
