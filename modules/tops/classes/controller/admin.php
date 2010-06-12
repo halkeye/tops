@@ -37,20 +37,48 @@ class controller_admin extends Controller_Template
     }
     function action_roomUpdate()
     {
+        $data = array('success'=>0);
 		$this->auto_render = FALSE;
         $id = Arr::get($_POST, 'id');
         $name = Arr::get($_POST, 'name');
-        $rooms = ORM::factory('room')->find_all();
 
-        $this->request->response = JSON::encode(array('id'=>$id, 'name'=>$name, 'success'=>1));
+        $id = Arr::get($_REQUEST, 'id');
+        $name = Arr::get($_REQUEST, 'name');
+
+        $room = ORM::factory('room')->find($id);
+        if ($room->loaded())
+        {
+            $room->name = $name;
+            if (!$room->check())
+            {
+                $errors = array_values($room->validate()->errors('', TRUE));
+                $data['message'] = "Unable to save room";
+                if ($errors)
+                    $data['message'] .= ": - " . implode(', - ', $errors);
+            }
+            else
+            {
+                $room->save();
+                if ($room->saved())
+                {
+                    $data['name'] = $room->name;
+                    $data['success'] = 1;
+                }
+                else
+                    $data['message'] = "Unknowing saving error";
+
+            }
+        }
+        else
+        {
+            $data['message'] = "Unable to find room";
+        }
+
+
+
+        $this->request->response = JSON::encode($data);
 
         return;
-        die();
-        $this->request->getParam();
-
-        $this->template->content = View::factory('admin/roomList', array(
-                'rooms' => $rooms,
-        ));
     }
 
     function action_days()

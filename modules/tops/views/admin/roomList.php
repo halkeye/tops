@@ -65,9 +65,17 @@ jQuery(document).ready(function() {
                 "Save" : function () {
                     var roomName = roomNameInput.val();
                     jQuery.post('<?php echo url::site('admin/roomUpdate') ?>', {id: roomId, name:roomName}, function(data) {
-                        jQuery.fn.bar({ message: "Room name updated from '" + oldRoomName + "' to '" + data.name + "'" });
-                        roomNameTD.text(data.name);
-                        dialog.dialog("close");
+                        if (data.success)
+                        {
+                            jQuery.fn.bar({ message: "Room name updated from '" + oldRoomName + "' to '" + data.name + "'" });
+                            roomNameTD.text(data.name);
+                            dialog.dialog("close");
+                        }
+                        else
+                        {
+                            jQuery.fn.bar({ message: "Error: " + data.message, background_color: '#F00' });
+                        }
+
                     }, "json");
                 },
             });

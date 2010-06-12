@@ -70,9 +70,7 @@ $menuLinks = array(
             </ul>
         </div>
         
-        <div id="content">  
-        <?php echo $content ?>
-        </div>
+        <div id="content"><?php echo $content ?></div>
         
         <div id="footer">
             <a href="http://validator.w3.org/check?uri=referer">XHTML 1.1 Validated</a> |
@@ -85,5 +83,8 @@ $menuLinks = array(
 	$.fn.bar.defaults.container = '#content';
 -->
 </script>
+<?php if (@$_GET['profile']): ?>
+<div id="kohana-profiler"><?php echo View::factory('profiler/stats') ?></div>
+<?php endif ?>
 </body>
 </html>
