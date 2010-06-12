@@ -9,9 +9,7 @@ class controller_static extends Controller
         $file = Kohana::find_file('views/css', basename($key, '.css'), 'css');
         if (!$file)
             throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$filename.$ext"));
-        header('Content-Type: text/css');
-        readfile($file);
-        exit();
+        $this->request->send_file($file, FALSE, array('mime_type' => File::mime_by_ext('css')));
     }
     public function action_js($keys)
     {
@@ -23,6 +21,7 @@ class controller_static extends Controller
             if (!$file)
                 throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$key.js"));
             readfile($file);
+	        $this->request->send_file($file, FALSE, array('mime_type' => 'application/x-javascript'));
         }
 
     }
@@ -35,21 +34,7 @@ class controller_static extends Controller
         if (!$file)
             throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$filename.$ext"));
 
-        if ($ext == 'png')
-            header('Content-Type: Content-Type: image/png');
-        if ($ext == 'jpg')
-            header('Content-Type: Content-Type: image/jpeg');
-        if ($ext == 'gif')
-            header('Content-Type: Content-Type: image/gif');
-        if ($ext == 'ico')
-            header('Content-Type: Content-Type: image/vnd.microsoft.icon');
-
-        header('Content-Length: ' . filesize($file));
-        
-        ob_clean();
-        flush();
-        readfile($file);
-
+        $this->request->send_file($file, FALSE, array('inline' => 1, 'mime_type' => File::mime_by_ext($ext)));
     }
 	
     /**

@@ -9,7 +9,7 @@
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="roomsBody">
     <?php foreach ($rooms as $room): ?>
         <tr<?php echo Text::alternate('', ' class="alt"'); ?>>
             <td class="roomId"><?php echo sprintf("%04d", $room->id) ?></td>
@@ -30,6 +30,49 @@
 
 <script type="text/javascript">
 <!--
+function pad(number, length) {
+    var str = '' + number;
+    while (str.length < length) {
+        str = '0' + str;
+    }
+    return str;
+}
+
+var editRoomClick = function() {
+    var obj = jQuery(this);
+    var roomId = obj.attr('id').substr(8);
+    var roomNameTD = obj.parents('tr:eq(0)').find('.roomName');
+    var oldRoomName = roomNameTD.text();
+
+    jQuery.fn.bar.removebar()
+        var dialog = jQuery("#editRoomDialog").dialog('open');
+
+    var roomNameInput = dialog.find('input:eq(0)');
+    roomNameInput.val(oldRoomName);
+
+    dialog.dialog('option', 'buttons', {
+            "Save" : function () {
+            var roomName = roomNameInput.val();
+            jQuery.post('<?php echo url::site('admin/roomUpdate') ?>', {id: roomId, name:roomName}, function(data) {
+                if (data.success)
+                {
+                    jQuery.fn.bar({ message: "Room name updated from '" + oldRoomName + "' to '" + data.name + "'" });
+                    roomNameTD.text(data.name);
+                    dialog.dialog("close");
+                }
+                else
+                {
+                    jQuery.fn.bar({ message: "Error: " + data.message, background_color: '#F00' });
+                }
+
+            }, "json");
+        },
+    });
+
+    return false;
+};
+
+
 jQuery(document).ready(function() {
         jQuery("#editRoomDialog,#createRoomDialog").dialog({
             autoOpen: false,
@@ -46,29 +89,29 @@ jQuery(document).ready(function() {
         });
         jQuery('#createRoom').bind('click', function() {
             jQuery.fn.bar.removebar()
-            jQuery("#createRoomDialog").dialog('open');
-            return false;
-        });
-        jQuery('.editRoomLink').bind('click', function() {
-            var obj = jQuery(this);
-            var roomId = obj.attr('id').substr(8);
-            var roomNameTD = obj.parents('tr:eq(0)').find('.roomName');
-            var oldRoomName = roomNameTD.text();
-
-            jQuery.fn.bar.removebar()
-            var dialog = jQuery("#editRoomDialog").dialog('open');
-
+            var dialog = jQuery("#createRoomDialog").dialog('open');
             var roomNameInput = dialog.find('input:eq(0)');
-            roomNameInput.val(oldRoomName);
+
 
             dialog.dialog('option', 'buttons', {
                 "Save" : function () {
                     var roomName = roomNameInput.val();
-                    jQuery.post('<?php echo url::site('admin/roomUpdate') ?>', {id: roomId, name:roomName}, function(data) {
+                    jQuery.post('<?php echo url::site('admin/roomCreate') ?>', {name:roomName}, function(data) {
                         if (data.success)
                         {
-                            jQuery.fn.bar({ message: "Room name updated from '" + oldRoomName + "' to '" + data.name + "'" });
-                            roomNameTD.text(data.name);
+                            var table = jQuery('#roomsBody');
+                            var lastRow = table.children('tr:last');
+                            var newRow = lastRow.clone();
+                            newRow.toggleClass('alt');
+                            newRow.children('td:eq(0)').text(pad(data.id,4));
+                            newRow.children('td:eq(1)').text(data.name);
+                            newRow.children('td:eq(2)').children('a').attr('id', 'editRoom'+data.id);
+
+                            jQuery('.editRoomLink', newRow).bind('click', editRoomClick);
+                            table.append(newRow);
+
+                            jQuery.fn.bar({ message: "New Room ("+data.name+") has been created" });
+                            roomNameInput.val('');
                             dialog.dialog("close");
                         }
                         else
@@ -82,6 +125,7 @@ jQuery(document).ready(function() {
 
             return false;
         });
+        jQuery('.editRoomLink').bind('click', editRoomClick);
 });
 -->
 </script>

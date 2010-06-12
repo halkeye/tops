@@ -35,6 +35,7 @@ class controller_admin extends Controller_Template
                 'rooms' => $rooms,
         ));
     }
+
     function action_roomUpdate()
     {
         $data = array('success'=>0);
@@ -42,32 +43,10 @@ class controller_admin extends Controller_Template
         $id = Arr::get($_POST, 'id');
         $name = Arr::get($_POST, 'name');
 
-        $id = Arr::get($_REQUEST, 'id');
-        $name = Arr::get($_REQUEST, 'name');
-
         $room = ORM::factory('room')->find($id);
         if ($room->loaded())
         {
-            $room->name = $name;
-            if (!$room->check())
-            {
-                $errors = array_values($room->validate()->errors('', TRUE));
-                $data['message'] = "Unable to save room";
-                if ($errors)
-                    $data['message'] .= ": - " . implode(', - ', $errors);
-            }
-            else
-            {
-                $room->save();
-                if ($room->saved())
-                {
-                    $data['name'] = $room->name;
-                    $data['success'] = 1;
-                }
-                else
-                    $data['message'] = "Unknowing saving error";
-
-            }
+            $data = $this->_handleRoomChange($room, $data);
         }
         else
         {
@@ -79,6 +58,45 @@ class controller_admin extends Controller_Template
         $this->request->response = JSON::encode($data);
 
         return;
+    }
+    
+    function action_roomCreate()
+    {
+        $data = array('success'=>0);
+		$this->auto_render = FALSE;
+        $room = ORM::factory('room');
+
+        $room->name = Arr::get($_REQUEST, 'name');
+        $data = $this->_handleRoomChange($room, $data);
+
+        $this->request->response = JSON::encode($data);
+
+        return;
+    }
+
+    private function _handleRoomChange($room, $data)
+    {
+        if (!$room->check())
+        {
+            $errors = array_values($room->validate()->errors('', TRUE));
+            $data['message'] = "Unable to save room";
+            if ($errors)
+                $data['message'] .= ": - " . implode(', - ', $errors);
+        }
+        else
+        {
+            $room->save();
+            if ($room->saved())
+            {
+                $data['name'] = $room->name;
+                $data['id'] = $room->pk();
+                $data['success'] = 1;
+            }
+            else
+                $data['message'] = "Unknowing saving error";
+
+        }
+        return $data;
     }
 
     function action_days()
