@@ -1,12 +1,3 @@
-<script>
-<!--
-var roomData = <?php $jsonRooms = array();
-foreach ($rooms as $room) 
-    $jsonRooms[] = $room->as_array();
-
-echo json_encode($jsonRooms); ?>;
--->
-</script>
 <h3>Rooms</h3>
 
 <table>
@@ -28,19 +19,13 @@ echo json_encode($jsonRooms); ?>;
     <?php endforeach ?>
     </tbody>
 </table>		
-<pre>
-</pre>
 
 <div id="createRoomDialog" title="Create New Room">
-    <form>
-        <div>Room Name: <input type="text" name="roomName" /></div>
-    </form>
+    <div>Room Name: <input type="text" name="roomName" /></div>
 </div>
 
-<div id="editRoomDialog" title="Create New Room">
-    <form>
-        <div>Room Name: <input type="text" name="roomName" /></div>
-    </form>
+<div id="editRoomDialog" title="Edit Room">
+    <div>Room Name: <input type="text" name="roomName" /></div>
 </div>
 
 <script type="text/javascript">
@@ -60,6 +45,7 @@ jQuery(document).ready(function() {
             }
         });
         jQuery('#createRoom').bind('click', function() {
+            jQuery.fn.bar.removebar()
             jQuery("#createRoomDialog").dialog('open');
             return false;
         });
@@ -67,18 +53,22 @@ jQuery(document).ready(function() {
             var obj = jQuery(this);
             var roomId = obj.attr('id').substr(8);
             var roomNameTD = obj.parents('tr:eq(0)').find('.roomName');
-            var roomName = roomNameTD.text();
+            var oldRoomName = roomNameTD.text();
 
+            jQuery.fn.bar.removebar()
             var dialog = jQuery("#editRoomDialog").dialog('open');
 
-            var roomNameInput = dialog.find('form').find('input:eq(0)');
-            roomNameInput.val(roomName);
+            var roomNameInput = dialog.find('input:eq(0)');
+            roomNameInput.val(oldRoomName);
 
             dialog.dialog('option', 'buttons', {
                 "Save" : function () {
                     var roomName = roomNameInput.val();
-                    roomNameTD.text(roomName);
-                    jQuery(this).dialog("close");
+                    jQuery.post('<?php echo url::site('admin/roomUpdate') ?>', {id: roomId, name:roomName}, function(data) {
+                        jQuery.fn.bar({ message: "Room name updated from '" + oldRoomName + "' to '" + data.name + "'" });
+                        roomNameTD.text(data.name);
+                        dialog.dialog("close");
+                    }, "json");
                 },
             });
 

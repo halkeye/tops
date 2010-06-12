@@ -1,5 +1,4 @@
 <?php
-
 $menuLinks = array(
         'index' => array(
             'title' => 'Home',
@@ -28,12 +27,15 @@ $menuLinks = array(
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head>
     <title>The Online Programming Schedule (TOPS)<?php echo $title ? "::$title" : "" ?></title>
-    <?php echo HTML::style('static/css/a1.css', NULL, TRUE); ?>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="designer" content="stt@sfu.ca" />
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/ui-darkness/jquery-ui.css" />
+    
+    <?php echo HTML::style('static/css/a1.css', NULL, TRUE); ?>
+    <?php echo HTML::style('static/css/jquery_bar.css', NULL, TRUE); ?>
+    <?php echo HTML::script('static/js/jquery_bar.js', NULL, TRUE); ?>
 </head>
 
 <body>
@@ -52,13 +54,13 @@ $menuLinks = array(
             <?php foreach ($menuLinks as $url=>$link): ?>
                 <?php if ($url == $currentPage): /* I hate this duplication, but littering it with ifs suck alot more */ ?>
                 <li class="current">
-                    <?php echo html::image('static/img/22_'.$link['img'].'.png', NULL, TRUE); ?>
+                    <?php echo html::image('static/img/22_'.$link['img'].'.png', array('alt'=>$link['title']), TRUE); ?>
                     <?php echo htmlentities($link['title']) ?> 
                 </li>
                 <?php else: ?>
                 <li>
                     <a href="<?php echo url::site("admin/$url"); ?>">
-                        <?php echo html::image('static/img/16_'.$link['img'].'.png', NULL, TRUE); ?>
+                        <?php echo html::image('static/img/16_'.$link['img'].'.png', array('alt'=>$link['title']), TRUE); ?>
                         <?php echo htmlentities($link['title']) ?>
                         <span><?php echo htmlentities($link['desc']) ?></span>
                     </a>
@@ -79,13 +81,9 @@ $menuLinks = array(
         </div>
     </div>
 <script type="text/javascript">
-  var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
-  document.write(unescape("%3Cscript src='" + rpxJsHost +
-"rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-  RPXNOW.overlay = true;
-  RPXNOW.language_preference = 'en';
+<!--
+	$.fn.bar.defaults.container = '#content';
+-->
 </script>
 </body>
 </html>

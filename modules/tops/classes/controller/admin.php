@@ -35,6 +35,23 @@ class controller_admin extends Controller_Template
                 'rooms' => $rooms,
         ));
     }
+    function action_roomUpdate()
+    {
+		$this->auto_render = FALSE;
+        $id = Arr::get($_POST, 'id');
+        $name = Arr::get($_POST, 'name');
+        $rooms = ORM::factory('room')->find_all();
+
+        $this->request->response = JSON::encode(array('id'=>$id, 'name'=>$name, 'success'=>1));
+
+        return;
+        die();
+        $this->request->getParam();
+
+        $this->template->content = View::factory('admin/roomList', array(
+                'rooms' => $rooms,
+        ));
+    }
 
     function action_days()
     {
