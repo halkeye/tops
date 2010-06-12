@@ -66,7 +66,7 @@ class controller_admin extends Controller_Template
         $this->auto_render = FALSE;
         $room = ORM::factory('room');
 
-        $room->name = Arr::get($_REQUEST, 'name');
+        $room->name = Arr::get($_POST, 'name');
         $data = $this->_handleRoomChange($room, $data);
 
         $this->request->response = JSON::encode($data);
