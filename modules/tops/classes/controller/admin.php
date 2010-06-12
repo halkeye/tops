@@ -23,7 +23,7 @@ class controller_admin extends Controller_Template
 
     function action_index()
     {
-		$this->template->content = View::factory('admin/index');
+        $this->template->content = View::factory('admin/index');
     }
 
     function action_rooms()
@@ -39,7 +39,7 @@ class controller_admin extends Controller_Template
     function action_roomUpdate()
     {
         $data = array('success'=>0);
-		$this->auto_render = FALSE;
+        $this->auto_render = FALSE;
         $id = Arr::get($_POST, 'id');
         $name = Arr::get($_POST, 'name');
 
@@ -63,7 +63,7 @@ class controller_admin extends Controller_Template
     function action_roomCreate()
     {
         $data = array('success'=>0);
-		$this->auto_render = FALSE;
+        $this->auto_render = FALSE;
         $room = ORM::factory('room');
 
         $room->name = Arr::get($_REQUEST, 'name');

@@ -6,7 +6,7 @@ class controller_schedule extends Controller_Template
     {
         $this->request->title = "Schedule Page";
         require_once(dirname(__FILE__).'/../../../../_inc/include.data.php'); 
-		$this->template->content = View::factory('schedule/index',array(
+        $this->template->content = View::factory('schedule/index',array(
                     'eventTypes' => $eventTypes,
                     'borderWidth' => $borderWidth,
                     'days' => $days,
