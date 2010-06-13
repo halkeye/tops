@@ -26,6 +26,13 @@ class controller_admin extends Controller_Template
         $this->template->content = View::factory('admin/index');
     }
 
+    /*
+ ____                           
+|  _ \ ___   ___  _ __ ___  ___ 
+| |_) / _ \ / _ \| '_ ` _ \/ __|
+|  _ < (_) | (_) | | | | | \__ \
+|_| \_\___/ \___/|_| |_| |_|___/
+    */
     function action_rooms()
     {
         $rooms = ORM::factory('room')
@@ -46,7 +53,8 @@ class controller_admin extends Controller_Template
         $room = ORM::factory('room')->find($id);
         if ($room->loaded())
         {
-            $data = $this->_handleRoomChange($room, $data);
+            $room->name = $name;
+            $data = $this->_handleCRUDChange($room, $data);
         }
         else
         {
@@ -67,42 +75,71 @@ class controller_admin extends Controller_Template
         $room = ORM::factory('room');
 
         $room->name = Arr::get($_POST, 'name');
-        $data = $this->_handleRoomChange($room, $data);
+        $data = $this->_handleCRUDChange($room, $data);
 
         $this->request->response = JSON::encode($data);
 
         return;
     }
 
-    private function _handleRoomChange($room, $data)
+    /*
+ ____                  
+|  _ \  __ _ _   _ ___ 
+| | | |/ _` | | | / __|
+| |_| | (_| | |_| \__ \
+|____/ \__,_|\__, |___/
+             |___/     
+    */
+    function action_days()
     {
-        if (!$room->check())
+        $days = ORM::factory('day')->find_all();
+
+        $this->template->content = View::factory('admin/daysList', array(
+                'days' => $days,
+        ));
+    }
+
+    function action_dayUpdate()
+    {
+        $data = array('success'=>0);
+        $this->auto_render = FALSE;
+        $id = Arr::get($_POST, 'id');
+        $name = Arr::get($_POST, 'name');
+
+        $day = ORM::factory('day')->find($id);
+        if ($day->loaded())
         {
-            $errors = array_values($room->validate()->errors('', TRUE));
-            $data['message'] = "Unable to save room";
-            if ($errors)
-                $data['message'] .= ": - " . implode(', - ', $errors);
+            $day->day = $name;
+            $data = $this->_handleCRUDChange($day, $data);
         }
         else
         {
-            $room->save();
-            if ($room->saved())
-            {
-                $data['name'] = $room->name;
-                $data['id'] = $room->pk();
-                $data['success'] = 1;
-            }
-            else
-                $data['message'] = "Unknowing saving error";
-
+            $data['message'] = "Unable to find day";
         }
-        return $data;
+
+
+
+        $this->request->response = JSON::encode($data);
+
+        return;
+    }
+    
+    function action_dayCreate()
+    {
+        $data = array('success'=>0);
+        $this->auto_render = FALSE;
+        $day = ORM::factory('day');
+
+        $day->day = Arr::get($_POST, 'name');
+        $data = $this->_handleCRUDChange($day, $data);
+
+        $this->request->response = JSON::encode($data);
+
+        return;
     }
 
-    function action_days()
-    {
-        $this->template->content = 'hello, world!';
-    }
+
+
     function action_types()
     {
         $this->template->content = 'hello, world!';
@@ -126,5 +163,30 @@ class controller_admin extends Controller_Template
 
         $this->request->redirect('system/accessDenied');
         return false;
+    }
+
+    private function _handleCRUDChange($room, $data)
+    {
+        if (!$room->check())
+        {
+            $errors = array_values($room->validate()->errors('', TRUE));
+            $data['message'] = "Unable to save room";
+            if ($errors)
+                $data['message'] .= ": - " . implode(', - ', $errors);
+        }
+        else
+        {
+            $room->save();
+            if ($room->saved())
+            {
+                $data['name'] = $room->value();
+                $data['id'] = $room->pk();
+                $data['success'] = 1;
+            }
+            else
+                $data['message'] = "Unknowing saving error";
+
+        }
+        return $data;
     }
 }
