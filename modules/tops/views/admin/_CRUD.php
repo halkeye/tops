@@ -2,7 +2,7 @@
 <h3><?php echo htmlentities($pluralName) ?></h3>
 
 <table>
-    <caption><a id="create<?php echo htmlentities($singleName) ?>" href="#">Create New <?php echo htmlentities($singleName) ?></a></caption>
+    <caption><a id="create<?php echo htmlentities($modelName) ?>" href="#">Create New <?php echo htmlentities($singleName) ?></a></caption>
     <thead>
         <tr>
             <th>ID</th>
@@ -15,17 +15,17 @@
         <tr<?php echo Text::alternate('', ' class="alt"'); ?>>
             <td class="itemId"><?php echo sprintf("%04d", $item->id) ?></td>
             <td class="itemName"><?php echo htmlentities($item); ?></td>
-            <td><a href="#" id="edit<?php echo htmlentities($singleName) ?><?php echo $item->id; ?>" class='edit<?php echo htmlentities($singleName) ?>Link'>(edit)</a></td>
+            <td><a href="#" id="edit<?php echo htmlentities($modelName) ?><?php echo $item->id; ?>" class='edit<?php echo htmlentities($modelName) ?>Link'>(edit)</a></td>
         </tr>
     <?php endforeach ?>
     </tbody>
 </table>        
 
-<div id="create<?php echo htmlentities($singleName) ?>Dialog" title="Create New <?php echo htmlentities($singleName) ?>">
+<div id="create<?php echo htmlentities($modelName) ?>Dialog" title="Create New <?php echo htmlentities($singleName) ?>">
     <div><?php echo htmlentities($singleName) ?> <?php echo htmlentities($nameFieldLabel) ?>: <input type="text" name="itemName" class="nameEntry"/></div>
 </div>
 
-<div id="edit<?php echo htmlentities($singleName) ?>Dialog" title="Edit <?php echo htmlentities($singleName) ?>">
+<div id="edit<?php echo htmlentities($modelName) ?>Dialog" title="Edit <?php echo htmlentities($singleName) ?>">
     <div><?php echo htmlentities($singleName) ?> <?php echo htmlentities($nameFieldLabel) ?>: <input type="text" name="itemName" class="nameEntry" /></div>
 </div>
 
@@ -39,17 +39,17 @@ function pad(number, length) {
     return str;
 }
 
-var edit<?php echo htmlentities($singleName) ?>Click = function() {
+var edit<?php echo htmlentities($modelName) ?>Click = function() {
     var obj = jQuery(this);
     var itemId = obj.attr('id').substr(8);
     var itemNameTD = obj.parents('tr:eq(0)').find('.itemName');
-    var old<?php echo htmlentities($singleName) ?>Name = itemNameTD.text();
+    var old<?php echo htmlentities($modelName) ?>Name = itemNameTD.text();
 
     jQuery.fn.bar.removebar()
-    var dialog = jQuery("#edit<?php echo htmlentities($singleName) ?>Dialog").dialog('open');
+    var dialog = jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog").dialog('open');
 
     var itemNameInput = dialog.find('input:eq(0)');
-    itemNameInput.val(old<?php echo htmlentities($singleName) ?>Name);
+    itemNameInput.val(old<?php echo htmlentities($modelName) ?>Name);
 
     dialog.dialog('option', 'buttons', {
             'Save' : function () {
@@ -57,7 +57,7 @@ var edit<?php echo htmlentities($singleName) ?>Click = function() {
             jQuery.post('<?php echo url::site('admin/'.$modelName.'Update') ?>', {id: itemId, name:itemName}, function(data) {
                 if (data.success)
                 {
-                    jQuery.fn.bar({ message: "<?php echo htmlentities($singleName) ?> name updated from '" + old<?php echo htmlentities($singleName) ?><?php echo htmlentities($nameFieldLabel) ?> + "' to '" + data.name + "'" });
+                    jQuery.fn.bar({ message: "<?php echo htmlentities($modelName) ?> name updated from '" + old<?php echo htmlentities($modelName) ?><?php echo htmlentities($nameFieldLabel) ?> + "' to '" + data.name + "'" });
                     itemNameTD.text(data.name);
                     dialog.dialog("close");
                 }
@@ -75,7 +75,7 @@ var edit<?php echo htmlentities($singleName) ?>Click = function() {
 
 
 jQuery(document).ready(function() {
-        jQuery("#edit<?php echo htmlentities($singleName) ?>Dialog,#create<?php echo htmlentities($singleName) ?>Dialog").dialog({
+        jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog,#create<?php echo htmlentities($modelName) ?>Dialog").dialog({
             autoOpen: false,
             closeOnEscape: true,
             modal: true, 
@@ -88,9 +88,9 @@ jQuery(document).ready(function() {
                 },
             }
         });
-        jQuery('#create<?php echo htmlentities($singleName) ?>').bind('click', function() {
+        jQuery('#create<?php echo htmlentities($modelName) ?>').bind('click', function() {
             jQuery.fn.bar.removebar()
-            var dialog = jQuery("#create<?php echo htmlentities($singleName) ?>Dialog").dialog('open');
+            var dialog = jQuery("#create<?php echo htmlentities($modelName) ?>Dialog").dialog('open');
             var itemNameInput = dialog.find('input:eq(0)');
 
 
@@ -106,12 +106,12 @@ jQuery(document).ready(function() {
                             newRow.toggleClass('alt');
                             newRow.children('td:eq(0)').text(pad(data.id,4));
                             newRow.children('td:eq(1)').text(data.name);
-                            newRow.children('td:eq(2)').children('a').attr('id', 'edit<?php echo htmlentities($singleName) ?>'+data.id);
+                            newRow.children('td:eq(2)').children('a').attr('id', 'edit<?php echo htmlentities($modelName) ?>'+data.id);
 
-                            jQuery('.edit<?php echo htmlentities($singleName) ?>Link', newRow).bind('click', edit<?php echo htmlentities($singleName) ?>Click);
+                            jQuery('.edit<?php echo htmlentities($modelName) ?>Link', newRow).bind('click', edit<?php echo htmlentities($modelName) ?>Click);
                             table.append(newRow);
 
-                            jQuery.fn.bar({ message: "New <?php echo htmlentities($singleName) ?> ("+data.name+") has been created" });
+                            jQuery.fn.bar({ message: "New <?php echo htmlentities($modelName) ?> ("+data.name+") has been created" });
                             itemNameInput.val('');
                             dialog.dialog("close");
                         }
@@ -126,7 +126,7 @@ jQuery(document).ready(function() {
 
             return false;
         });
-        jQuery('.edit<?php echo htmlentities($singleName) ?>Link').bind('click', edit<?php echo htmlentities($singleName) ?>Click);
+        jQuery('.edit<?php echo htmlentities($modelName) ?>Link').bind('click', edit<?php echo htmlentities($modelName) ?>Click);
 
         <?php if ($nameFieldType == 'date'): ?>
             jQuery(".nameEntry").datepicker({

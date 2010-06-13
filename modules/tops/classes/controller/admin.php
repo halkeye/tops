@@ -35,8 +35,7 @@ class controller_admin extends Controller_Template
     */
     function action_rooms()
     {
-        $rooms = ORM::factory('room')
-            ->find_all();
+        $rooms = ORM::factory('room')->find_all();
 
         $this->template->content = View::factory('admin/roomList', array(
                 'rooms' => $rooms,
@@ -142,7 +141,11 @@ class controller_admin extends Controller_Template
 
     function action_types()
     {
-        $this->template->content = 'hello, world!';
+        $types = ORM::factory('eventType')->find_all();
+
+        $this->template->content = View::factory('admin/typeList', array(
+                'types' => $types,
+        ));
     }
 
     function requireAuth()
