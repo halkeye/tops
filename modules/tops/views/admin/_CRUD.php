@@ -1,8 +1,10 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.'); ?>
+<?php defined('SYSPATH') OR die('No direct access allowed.'); 
+$jsonItems = array();
+?>
 <h3><?php echo htmlentities($pluralName) ?></h3>
 
 <table>
-    <caption><a id="create<?php echo htmlentities($modelName) ?>" href="#">Create New <?php echo htmlentities($singleName) ?></a></caption>
+    <caption><a id="createLink" href="#">Create New <?php echo htmlentities($singleName) ?></a></caption>
     <thead>
         <tr>
             <th>ID</th>
@@ -21,13 +23,14 @@
             <td><?php echo htmlentities($item->$fieldKey) ?></td>
             <?php endforeach ?>
 
-            <td><a href="#" id="edit<?php echo htmlentities($modelName) ?><?php echo $item->id; ?>" class='edit<?php echo htmlentities($modelName) ?>Link'>(edit)</a></td>
+            <td><a href="#" id="edit<?php echo $item->pk(); ?>" class='editLink'>(edit)</a></td>
         </tr>
-    <?php endforeach ?>
+    <?php $jsonItems[$item->pk()] = $item->as_array(); endforeach ?>
     </tbody>
 </table>        
 
-<div id="edit<?php echo htmlentities($modelName) ?>Dialog" title="Edit <?php echo htmlentities($singleName) ?>">
+<div id="editDialog" title="Edit <?php echo htmlentities($singleName) ?>">
+    <form action="#" method="post">
     <table>
     <?php foreach ($fields as $fieldKey=>$fieldData): ?>
     <tr><td>
@@ -37,10 +40,15 @@
     </td></tr>
     <?php endforeach ?>
     </table>
+    </form>
 </div>
 
 <script type="text/javascript">
 <!--
+// FIXME - Gavin look here
+var itemsData = <?php echo json::encode($jsonItems); ?>;
+var fieldOrder = <?php echo json::encode(array_keys($fields)); ?>;
+
 function pad(number, length) {
     var str = '' + number;
     while (str.length < length) {
@@ -49,27 +57,38 @@ function pad(number, length) {
     return str;
 }
 
-var edit<?php echo htmlentities($modelName) ?>Click = function() {
+var editClick = function() {
     var obj = jQuery(this);
-    var itemId = obj.attr('id').substr(8);
-    var itemNameTD = obj.parents('tr:eq(0)').find('.itemName');
-    var old<?php echo htmlentities($modelName) ?>Name = itemNameTD.text();
 
-    jQuery.fn.bar.removebar()
-    var dialog = jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog").dialog('open');
+    var itemId = obj.attr('id').substr(4);
+    var itemData = itemsData[itemId];
+    if (!itemData)
+    {
+        alert("cannot find data for " + itemId);
+        return;
+    }
+    for(var i = 0; i < fieldOrder.length; i++) 
+    {
+        jQuery('#edit'+fieldOrder[i]).val(itemData[fieldOrder[i]]);
+    }
+    var dialog = jQuery("#editDialog");
     dialog.dialog('option', 'title', "Edit <?php echo htmlentities($singleName) ?>");
-
-    var itemNameInput = dialog.find('input:eq(0)');
-    itemNameInput.val(old<?php echo htmlentities($modelName) ?>Name);
-
-    dialog.dialog('option', 'buttons', {
-            'Save' : function () {
-            var itemName = itemNameInput.val();
-            jQuery.post('<?php echo url::site('admin/'.$modelName.'Update') ?>', {id: itemId, name:itemName}, function(data) {
+    dialog.dialog('option', 'buttons', { 'Save' : function () {
+            jQuery.fn.bar.removebar()
+            var dialogData = convertFormArrayToHash(dialog.find('form').serializeArray());
+            dialogData['id'] = itemId;
+            jQuery.post('<?php echo url::site('admin/'.$modelName.'Update') ?>', dialogData, function(data) {
                 if (data.success)
                 {
-                    jQuery.fn.bar({ message: "<?php echo htmlentities($modelName) ?> updated successfully" });
-                    itemNameTD.text(data.name);
+                    jQuery.fn.bar({ message: "<?php echo htmlentities($singleName) ?> updated successfully" });
+                    var children = obj.parents('tr').children('td');
+
+                    for(var i = 0; i < fieldOrder.length; i++) 
+                    {
+                        children.eq(i+1).text(data[fieldOrder[i]]);
+                    }
+                    itemsData[itemId] = data;
+
                     dialog.dialog("close");
                 }
                 else
@@ -80,13 +99,24 @@ var edit<?php echo htmlentities($modelName) ?>Click = function() {
             }, "json");
         },
     });
+    dialog.dialog('open');
 
     return false;
 };
 
+function convertFormArrayToHash(data)
+{
+    var paramObj = {};
+    $.each(data, function(_, kv) {
+            /* Get rid of edit prefix */
+            paramObj[kv.name.substr(4)] = kv.value;
+    });
+    return paramObj;
+}
+
 
 jQuery(document).ready(function() {
-        jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog").dialog({
+        jQuery("#editDialog").dialog({
             autoOpen: false,
             closeOnEscape: true,
             modal: true, 
@@ -99,32 +129,42 @@ jQuery(document).ready(function() {
                 },
             }
         });
-        jQuery('#create<?php echo htmlentities($modelName) ?>').bind('click', function() {
-            jQuery.fn.bar.removebar()
-            var dialog = jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog").dialog('open');
+        jQuery('#createLink').bind('click', function() {
+            var dialog = jQuery("#editDialog").dialog('open');
             dialog.dialog('option', 'title', "Create New <?php echo htmlentities($singleName) ?>");
             var itemNameInput = dialog.find('input:eq(0)');
 
+            for(var i = 0; i < fieldOrder.length; i++) 
+            {
+                jQuery('#edit'+fieldOrder[i]).val('');
+            }
 
             dialog.dialog('option', 'buttons', {
                 "Save" : function () {
-                    var itemName = itemNameInput.val();
-                    jQuery.post('<?php echo url::site('admin/'.$modelName.'Create') ?>', {name:itemName}, function(data) {
+                    jQuery.fn.bar.removebar()
+                    var dialogData = convertFormArrayToHash(dialog.find('form').serializeArray());
+                    jQuery.post('<?php echo url::site('admin/'.$modelName.'Create') ?>', dialogData, function(data) {
                         if (data.success)
                         {
                             var table = jQuery('#itemsBody');
                             var lastRow = table.children('tr:last');
                             var newRow = lastRow.clone();
                             newRow.toggleClass('alt');
-                            newRow.children('td:eq(0)').text(pad(data.id,4));
-                            newRow.children('td:eq(1)').text(data.name);
-                            newRow.children('td:eq(2)').children('a').attr('id', 'edit<?php echo htmlentities($modelName) ?>'+data.id);
+                            var children = newRow.children('td');
 
-                            jQuery('.edit<?php echo htmlentities($modelName) ?>Link', newRow).bind('click', edit<?php echo htmlentities($modelName) ?>Click);
+                            children.eq(0).text(pad(data.id,4));
+                            for(var i = 0; i < fieldOrder.length; i++) 
+                            {
+                                children.eq(i+1).text(data[fieldOrder[i]]);
+                            }
+
+                            children.eq(fieldOrder.length+2).children('a').attr('id', 'edit'+data.id);
+
+                            jQuery('.editLink', newRow).bind('click', editClick);
                             table.append(newRow);
 
-                            jQuery.fn.bar({ message: "New <?php echo htmlentities($modelName) ?> ("+data.name+") has been created" });
-                            itemNameInput.val('');
+                            jQuery.fn.bar({ message: "New <?php echo htmlentities($singleName) ?> ("+data.asString+") has been created" });
+                            itemsData.push(data);
                             dialog.dialog("close");
                         }
                         else
@@ -138,7 +178,7 @@ jQuery(document).ready(function() {
 
             return false;
         });
-        jQuery('.edit<?php echo htmlentities($modelName) ?>Link').bind('click', edit<?php echo htmlentities($modelName) ?>Click);
+        jQuery('.editLink').bind('click', editClick);
 
         <?php 
             foreach ($fields as $fieldKey=>$fieldData)

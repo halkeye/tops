@@ -84,7 +84,7 @@ a:hover , a:active {
 	display: block;
 	position: absolute; top: 365px; left: 130px;
 	padding: 0.75em;
-	background: url('../img/16/paperclip.png') no-repeat #606B2C 10px 50%;
+	background: url('../img/16_paperclip.png') no-repeat #606B2C 10px 50%;
 }
 
 #container {

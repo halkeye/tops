@@ -46,21 +46,20 @@ class controller_admin extends Controller_Template
     {
         $data = array('success'=>0);
         $this->auto_render = FALSE;
-        $id = Arr::get($_POST, 'id');
-        $name = Arr::get($_POST, 'name');
+        $id = Arr::get($_REQUEST, 'id');
+        if (!$id) die("no id provided");
 
         $room = ORM::factory('room')->find($id);
         if ($room->loaded())
         {
-            $room->name = $name;
+            unset($_REQUEST['id']);
+            $room->values($_REQUEST);
             $data = $this->_handleCRUDChange($room, $data);
         }
         else
         {
             $data['message'] = "Unable to find room";
         }
-
-
 
         $this->request->response = JSON::encode($data);
 
@@ -73,7 +72,7 @@ class controller_admin extends Controller_Template
         $this->auto_render = FALSE;
         $room = ORM::factory('room');
 
-        $room->name = Arr::get($_POST, 'name');
+        $room->name = Arr::get($_REQUEST, 'name');
         $data = $this->_handleCRUDChange($room, $data);
 
         $this->request->response = JSON::encode($data);
@@ -102,13 +101,14 @@ class controller_admin extends Controller_Template
     {
         $data = array('success'=>0);
         $this->auto_render = FALSE;
-        $id = Arr::get($_POST, 'id');
-        $name = Arr::get($_POST, 'name');
+        $id = Arr::get($_REQUEST, 'id');
+        if (!$id) die("no id provided");
 
         $day = ORM::factory('day')->find($id);
         if ($day->loaded())
         {
-            $day->day = $name;
+            unset($_REQUEST['id']);
+            $day->values($_REQUEST);
             $data = $this->_handleCRUDChange($day, $data);
         }
         else
@@ -129,7 +129,7 @@ class controller_admin extends Controller_Template
         $this->auto_render = FALSE;
         $day = ORM::factory('day');
 
-        $day->day = Arr::get($_POST, 'name');
+        $day->day = Arr::get($_REQUEST, 'name');
         $data = $this->_handleCRUDChange($day, $data);
 
         $this->request->response = JSON::encode($data);
@@ -137,7 +137,14 @@ class controller_admin extends Controller_Template
         return;
     }
 
-
+    /*
+ _____                 _     _____                      
+| ____|_   _____ _ __ | |_  |_   _|   _ _ __   ___  ___ 
+|  _| \ \ / / _ \ '_ \| __|   | || | | | '_ \ / _ \/ __|
+| |___ \ V /  __/ | | | |_    | || |_| | |_) |  __/\__ \
+|_____| \_/ \___|_| |_|\__|   |_| \__, | .__/ \___||___/
+                                  |___/|_|              
+    */
 
     function action_types()
     {
@@ -147,6 +154,50 @@ class controller_admin extends Controller_Template
                 'types' => $types,
         ));
     }
+
+    function action_typeCreate()
+    {
+        $data = array('success'=>0);
+        $this->auto_render = FALSE;
+        $type = ORM::factory('eventType');
+
+        $type->values($_REQUEST);
+        $data = $this->_handleCRUDChange($type, $data);
+
+        $this->request->response = JSON::encode($data);
+
+        return;
+    }
+
+    function action_typeUpdate()
+    {
+        $data = array('success'=>0);
+        $this->auto_render = FALSE;
+        $id = Arr::get($_REQUEST, 'id');
+        if (!$id) die("no id provided");
+
+        $type = ORM::factory('eventType')->find($id);
+        if ($type->loaded())
+        {
+            unset($_REQUEST['id']);
+            $type->values($_REQUEST);
+            $data = $this->_handleCRUDChange($type, $data);
+        }
+        else
+        {
+            $data['message'] = "Unable to find eventType";
+        }
+
+        $this->request->response = JSON::encode($data);
+        return;
+    }
+    /*
+ _   _ _   _ _ _ _   _           
+| | | | |_(_) (_) |_(_) ___  ___ 
+| | | | __| | | | __| |/ _ \/ __|
+| |_| | |_| | | | |_| |  __/\__ \
+ \___/ \__|_|_|_|\__|_|\___||___/
+     */
 
     function requireAuth()
     {
@@ -168,22 +219,23 @@ class controller_admin extends Controller_Template
         return false;
     }
 
-    private function _handleCRUDChange($room, $data)
+    private function _handleCRUDChange($item, $data)
     {
-        if (!$room->check())
+        if (!$item->check())
         {
-            $errors = array_values($room->validate()->errors('', TRUE));
-            $data['message'] = "Unable to save room";
+            $errors = array_values($item->validate()->errors('', TRUE));
+            $data['message'] = "Unable to save item";
             if ($errors)
                 $data['message'] .= ": - " . implode(', - ', $errors);
         }
         else
         {
-            $room->save();
-            if ($room->saved())
+            $item->save();
+            if ($item->saved())
             {
-                $data['name'] = $room->value();
-                $data['id'] = $room->pk();
+                $data = $item->as_array();
+                unset($data[0]);
+                $data['asString'] = (string) $item;
                 $data['success'] = 1;
             }
             else
