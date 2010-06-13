@@ -9,19 +9,18 @@ class controller_static extends Controller
         $file = Kohana::find_file('views/css', basename($key, '.css'), 'css');
         if (!$file)
             throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$filename.$ext"));
-        $this->request->send_file($file, FALSE, array('mime_type' => File::mime_by_ext('css')));
+        $this->request->send_file($file, FALSE, array('mime_type' => File::mime_by_ext('css'), 'inline'=>1));
     }
     public function action_js($keys)
     {
-        if (self::check(300) === FALSE) self::set(300);
-        header('Content-Type: application/x-javascript');
+#        if (self::check(300) === FALSE) self::set(300);
         foreach (explode(',', $keys) as $key)
         {
             $file = Kohana::find_file('views/js', basename($key, '.js'), 'js');
             if (!$file)
                 throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$key.js"));
             readfile($file);
-            $this->request->send_file($file, FALSE, array('mime_type' => 'application/x-javascript'));
+            $this->request->send_file($file, FALSE, array('mime_type' => 'application/x-javascript', 'inline' => 1));
         }
 
     }

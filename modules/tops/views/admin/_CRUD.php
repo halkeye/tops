@@ -32,17 +32,22 @@ $jsonItems = array();
 <div id="editDialog" title="Edit <?php echo htmlentities($singleName) ?>">
     <form action="#" method="post">
     <table>
-    <?php foreach ($fields as $fieldKey=>$fieldData): ?>
+    <?php
+        foreach ($fields as $fieldKey=>$fieldData): 
+            if($fieldData['type'] == 'hidden') continue;
+            $attr = array('type'=>'text', 'id' => "edit$fieldKey");
+            if($fieldData['type'] == 'color') $attr['class'] = "color {pickerPosition:'top'}";
+    ?>
+
     <tr><td>
         <?php echo htmlentities($fieldData['name']) ?>: 
     </td><td>
-        <?php echo Form::input("edit$fieldKey", "", array('type'=>'text', 'id' => "edit$fieldKey")) ?>
+        <?php echo Form::input("edit$fieldKey", "", $attr) ?>
     </td></tr>
     <?php endforeach ?>
     </table>
     </form>
 </div>
-    <div id="colorpicker" style="display: none; position: absolute;z-index: 1003" class="ui-dialog ui-widget-content"></div>
 
 <script type="text/javascript">
 <!--
@@ -66,10 +71,6 @@ var editClick = function() {
     {
         alert("cannot find data for " + itemId);
         return;
-    }
-    for(var i = 0; i < fieldOrder.length; i++) 
-    {
-        jQuery('#edit'+fieldOrder[i]).val(itemData[fieldOrder[i]]);
     }
     var dialog = jQuery("#editDialog");
     dialog.dialog('option', 'title', "Edit <?php echo htmlentities($singleName) ?>");
@@ -100,6 +101,10 @@ var editClick = function() {
         },
     });
     dialog.dialog('open');
+    for(var i = 0; i < fieldOrder.length; i++) 
+    {
+        jQuery('#edit'+fieldOrder[i]).val(itemData[fieldOrder[i]]).focus().blur();
+    }
 
     return false;
 };
@@ -122,9 +127,6 @@ jQuery(document).ready(function() {
             modal: true, 
             draggable: true,
             minWidth: 400,
-            close: function(event, ui) { 
-                jQuery('#colorpicker').hide();
-            },
             width: 400,
             buttons: {
                 "Save" : function () {
@@ -133,14 +135,9 @@ jQuery(document).ready(function() {
             }
         });
         jQuery('#createLink').bind('click', function() {
-            var dialog = jQuery("#editDialog").dialog('open');
+            var dialog = jQuery("#editDialog");
             dialog.dialog('option', 'title', "Create New <?php echo htmlentities($singleName) ?>");
             var itemNameInput = dialog.find('input:eq(0)');
-
-            for(var i = 0; i < fieldOrder.length; i++) 
-            {
-                jQuery('#edit'+fieldOrder[i]).val('');
-            }
 
             dialog.dialog('option', 'buttons', {
                 "Save" : function () {
@@ -178,6 +175,11 @@ jQuery(document).ready(function() {
                     }, "json");
                 },
             });
+            dialog.dialog('open');
+            for(var i = 0; i < fieldOrder.length; i++) 
+            {
+                jQuery('#edit'+fieldOrder[i]).val('').css('background-color', '').css('color', '');
+            }
 
             return false;
         });
@@ -190,19 +192,9 @@ jQuery(document).ready(function() {
                     echo "jQuery('#edit$fieldKey').datepicker({dateFormat: 'yy-mm-dd',});\n";
                 else if ($fieldData['type'] == 'color')
                 {
-                    Assets::addJS('jquery_farbtastic.js', 100);
-                    Assets::addCSS('jquery_farbtastic.js', 100);
+                    Assets::addJS('jscolor.js', 100);
                     ?>
-                        jQuery('#colorpicker').farbtastic('#edit<?php echo $fieldKey ?>');
-                        jQuery('#edit<?php echo $fieldKey ?>').bind('click', function() {
-                                var zindex = jQuery('ui-widget-overlay').css('zIndex');
-                                var offset = jQuery(this).offset();
-                                offset.left = offset.left + jQuery(this).width()+20;
-                                jQuery('#colorpicker')
-                                    .offset(offset)
-                                    .css('zIndex', zindex+1)
-                                    .show();
-                        });
+                        jscolor.dir = '<?php echo url::site('static/img/jscolor_'); ?>';
                     <?php
                 }
             }

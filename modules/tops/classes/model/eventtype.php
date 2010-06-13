@@ -9,6 +9,8 @@ class Model_Eventtype extends ORM
 
     protected $_rules = array(
             'name'    => array('not_empty' => array()),
+            'textColor' => array('color' => array()),
+            'bgColor' => array('color' => array()),
     );
 
     protected $_callbacks = array(
@@ -18,6 +20,8 @@ class Model_Eventtype extends ORM
 
     protected $_filters = array(
             TRUE       => array('trim' => array()),
+            'bgColor'       => array('Model_Eventtype::mkcolor' => array()),
+            'textColor'       => array('Model_Eventtype::mkcolor' => array()),
     );
     
     public function _unique(Validate $data, $field)
@@ -26,6 +30,12 @@ class Model_Eventtype extends ORM
         {
             $data->error($field, $field.'_unique', array($data[$field]));
         }
+    }
+    public static function mkcolor($value)
+    {
+        if (strpos($value, '#') !== 0)
+            $value = "#$value";
+        return $value;
     }
 
     /**
