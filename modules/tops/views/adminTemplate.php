@@ -78,9 +78,25 @@ $menuLinks = array(
             Design by: stt@sfu.ca
         </div>
     </div>
+    <div id="indicator" style="z-index: 1003; position: absolute; top: 15px; left: 15px; width: 32px; height: 32px; display: none" class="ui-dialog ui-widget-content">
+        <?php echo html::image('static/img/ajax-loader.gif', array('alt'=>'indicator'), TRUE); ?>
+    </div>
 <script type="text/javascript">
 <!--
 	$.fn.bar.defaults.container = '#content';
+    jQuery(document).ajaxStart(function() {
+            var zindex = jQuery('ui-widget-overlay').css('z-index');
+            jQuery('#indicator')
+                .css('z-index', zindex+1)
+                .show();
+    });
+    jQuery(document).ajaxError(function(e, xhr, settings, except) {
+            jQuery('#indicator').hide();
+            jQuery.fn.bar({ message: 'error trying to access: ' + settings.url + ' -- error: ' + except, background_color: '#F00'  });
+    });
+    jQuery(document).ajaxComplete(function() {
+            jQuery('#indicator').hide();
+    });
 -->
 </script>
 <?php if (@$_GET['profile']): ?>
