@@ -4,7 +4,8 @@ class controller_static extends Controller
 {
     public function action_css($key, $ext)
     {
-        //if (IN_PRODUCTION && self::check(300) === FALSE) self::set(300);
+        #if (Kohana_Core::$environment == Kohana::DEVELOPMENT)
+        if (self::check(300) === FALSE) self::set(300);
 
         $file = Kohana::find_file('views/css', basename($key, '.css'), 'css');
         if (!$file)
@@ -13,7 +14,7 @@ class controller_static extends Controller
     }
     public function action_js($keys)
     {
-        //if (IN_PRODUCTION && self::check(300) === FALSE) self::set(300);
+        if (self::check(300) === FALSE) self::set(300);
         header('Content-Type: application/x-javascript');
         foreach (explode(',', $keys) as $key)
         {
@@ -28,7 +29,7 @@ class controller_static extends Controller
     
     public function action_img($filename, $ext)
     {
-        //if (IN_PRODUCTION && self::check(300) === FALSE) self::set(300);
+        if (self::check(300) === FALSE) self::set(300);
         $info = pathinfo($filename);
         $file = Kohana::find_file('views/images', basename($info['basename']), $ext);
         if (!$file)
