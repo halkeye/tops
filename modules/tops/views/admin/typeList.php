@@ -3,9 +3,13 @@
 echo View::factory('admin/_CRUD', array(
             'singleName' => 'Event Type',
             'pluralName' => 'Event Types',
-            'nameFieldLabel' => 'Name',
-            'nameFieldType' => 'text',
             'modelName' => 'type',
             'items' => $types,
+            'fields' => array(
+                'name'      => array('name'=>'Name',            'type'=>'text'),
+                'nameKey'   => array('name'=>'CSS Key',         'type'=>'text'),
+                'textColor' => array('name'=>'Text Color',      'type'=>'text'),
+                'bgColor'   => array('name'=>'Highlight Color', 'type'=>'text'),
+            ),
 ));
 

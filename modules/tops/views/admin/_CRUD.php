@@ -6,7 +6,9 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th><?php echo htmlentities($nameFieldLabel) ?></th>
+            <?php foreach (array_values($fields) as $fieldData): ?>
+            <th><?php echo htmlentities($fieldData['name']) ?></th>
+            <?php endforeach ?>
             <th>Actions</th>
         </tr>
     </thead>
@@ -14,19 +16,27 @@
     <?php foreach ($items as $item): ?>
         <tr<?php echo Text::alternate('', ' class="alt"'); ?>>
             <td class="itemId"><?php echo sprintf("%04d", $item->id) ?></td>
-            <td class="itemName"><?php echo htmlentities($item); ?></td>
+
+            <?php foreach (array_keys($fields) as $fieldKey): ?>
+            <td><?php echo htmlentities($item->$fieldKey) ?></td>
+            <?php endforeach ?>
+
             <td><a href="#" id="edit<?php echo htmlentities($modelName) ?><?php echo $item->id; ?>" class='edit<?php echo htmlentities($modelName) ?>Link'>(edit)</a></td>
         </tr>
     <?php endforeach ?>
     </tbody>
 </table>        
 
-<div id="create<?php echo htmlentities($modelName) ?>Dialog" title="Create New <?php echo htmlentities($singleName) ?>">
-    <div><?php echo htmlentities($singleName) ?> <?php echo htmlentities($nameFieldLabel) ?>: <input type="text" name="itemName" class="nameEntry"/></div>
-</div>
-
 <div id="edit<?php echo htmlentities($modelName) ?>Dialog" title="Edit <?php echo htmlentities($singleName) ?>">
-    <div><?php echo htmlentities($singleName) ?> <?php echo htmlentities($nameFieldLabel) ?>: <input type="text" name="itemName" class="nameEntry" /></div>
+    <table>
+    <?php foreach ($fields as $fieldKey=>$fieldData): ?>
+    <tr><td>
+        <?php echo htmlentities($fieldData['name']) ?>: 
+    </td><td>
+        <?php echo Form::input("edit$fieldKey", "", array('type'=>'text', 'id' => "edit$fieldKey")) ?>
+    </td></tr>
+    <?php endforeach ?>
+    </table>
 </div>
 
 <script type="text/javascript">
@@ -47,6 +57,7 @@ var edit<?php echo htmlentities($modelName) ?>Click = function() {
 
     jQuery.fn.bar.removebar()
     var dialog = jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog").dialog('open');
+    dialog.dialog('option', 'title', "Edit <?php echo htmlentities($singleName) ?>");
 
     var itemNameInput = dialog.find('input:eq(0)');
     itemNameInput.val(old<?php echo htmlentities($modelName) ?>Name);
@@ -57,7 +68,7 @@ var edit<?php echo htmlentities($modelName) ?>Click = function() {
             jQuery.post('<?php echo url::site('admin/'.$modelName.'Update') ?>', {id: itemId, name:itemName}, function(data) {
                 if (data.success)
                 {
-                    jQuery.fn.bar({ message: "<?php echo htmlentities($modelName) ?> name updated from '" + old<?php echo htmlentities($modelName) ?><?php echo htmlentities($nameFieldLabel) ?> + "' to '" + data.name + "'" });
+                    jQuery.fn.bar({ message: "<?php echo htmlentities($modelName) ?> updated successfully" });
                     itemNameTD.text(data.name);
                     dialog.dialog("close");
                 }
@@ -75,7 +86,7 @@ var edit<?php echo htmlentities($modelName) ?>Click = function() {
 
 
 jQuery(document).ready(function() {
-        jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog,#create<?php echo htmlentities($modelName) ?>Dialog").dialog({
+        jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog").dialog({
             autoOpen: false,
             closeOnEscape: true,
             modal: true, 
@@ -90,7 +101,8 @@ jQuery(document).ready(function() {
         });
         jQuery('#create<?php echo htmlentities($modelName) ?>').bind('click', function() {
             jQuery.fn.bar.removebar()
-            var dialog = jQuery("#create<?php echo htmlentities($modelName) ?>Dialog").dialog('open');
+            var dialog = jQuery("#edit<?php echo htmlentities($modelName) ?>Dialog").dialog('open');
+            dialog.dialog('option', 'title', "Create New <?php echo htmlentities($singleName) ?>");
             var itemNameInput = dialog.find('input:eq(0)');
 
 
@@ -128,11 +140,13 @@ jQuery(document).ready(function() {
         });
         jQuery('.edit<?php echo htmlentities($modelName) ?>Link').bind('click', edit<?php echo htmlentities($modelName) ?>Click);
 
-        <?php if ($nameFieldType == 'date'): ?>
-            jQuery(".nameEntry").datepicker({
-                dateFormat: 'yy-mm-dd',
-            });
-        <?php endif ?>
+        <?php 
+            foreach ($fields as $fieldKey=>$fieldData)
+            {
+                if ($fieldData['type'] == 'date')
+                    echo "jQuery('#edit$fieldKey').datepicker({dateFormat: 'yy-mm-dd',});\n";
+            }
+        ?>
 });
 -->
 </script>

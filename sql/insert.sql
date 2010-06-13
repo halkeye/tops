@@ -1,7 +1,7 @@
 truncate eventTypes;
 insert into eventTypes VALUES 
 	(1, 'Performance', 'performance', '#111111', '#FF7F47'),
-	(2, 'Game / Contests', 'game_contests', '#3A3939;', '#75FF62'),
+	(2, 'Game / Contests', 'game_contests', '#3A3939', '#75FF62'),
 	(3, 'Art / Creative', 'art_creative', '#000000', '#017CFD'),
 	(4, 'Academic', 'academic', '#000000', '#FB0000'),
 	(5, 'Jap. Culture', 'jap_culture', '#000000', '#9B9B9B');

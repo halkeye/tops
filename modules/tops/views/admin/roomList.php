@@ -3,8 +3,10 @@
 echo View::factory('admin/_CRUD', array(
             'singleName' => 'Room',
             'pluralName' => 'Rooms',
-            'nameFieldLabel' => 'Name',
-            'nameFieldType' => 'text',
             'modelName' => 'room',
             'items' => $rooms,
+            'fields' => array(
+                'name'       => array('name'=>'Name',            'type'=>'text'),
+            ),
 ));
+

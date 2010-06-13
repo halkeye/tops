@@ -4,8 +4,7 @@ class controller_static extends Controller
 {
     public function action_css($key, $ext)
     {
-        #if (Kohana_Core::$environment == Kohana::DEVELOPMENT)
-        if (self::check(300) === FALSE) self::set(300);
+        if (Kohana_Core::$environment != Kohana::DEVELOPMENT && self::check(300) === FALSE) self::set(300);
 
         $file = Kohana::find_file('views/css', basename($key, '.css'), 'css');
         if (!$file)
