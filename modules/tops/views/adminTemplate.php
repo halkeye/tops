@@ -1,4 +1,7 @@
 <?php
+# Force template code to run first before layout wrapper
+$content = (string) $content;
+
 $menuLinks = array(
         'index' => array(
             'title' => 'Home',
@@ -33,9 +36,15 @@ $menuLinks = array(
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/ui-darkness/jquery-ui.css" />
     
-    <?php echo HTML::style('static/css/a1.css', NULL, TRUE); ?>
-    <?php echo HTML::style('static/css/jquery_bar.css', NULL, TRUE); ?>
-    <?php echo HTML::script('static/js/jquery_bar.js', NULL, TRUE); ?>
+    <?php {
+        echo HTML::style('static/css/a1.css', NULL, TRUE);
+        foreach (Assets::getCSS() as $style)
+            echo HTML::style("static/css/$style", NULL, TRUE);
+        echo HTML::style('static/css/jquery_bar.css', NULL, TRUE);
+        echo HTML::script('static/js/jquery_bar.js', NULL, TRUE); 
+        foreach (Assets::getJS() as $js)
+            echo HTML::script("static/js/$js", NULL, TRUE);
+    } ?>
 </head>
 
 <body>

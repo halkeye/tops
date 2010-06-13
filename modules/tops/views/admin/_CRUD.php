@@ -42,10 +42,10 @@ $jsonItems = array();
     </table>
     </form>
 </div>
+    <div id="colorpicker" style="display: none; position: absolute;z-index: 1003" class="ui-dialog ui-widget-content"></div>
 
 <script type="text/javascript">
 <!--
-// FIXME - Gavin look here
 var itemsData = <?php echo json::encode($jsonItems); ?>;
 var fieldOrder = <?php echo json::encode(array_keys($fields)); ?>;
 
@@ -122,6 +122,9 @@ jQuery(document).ready(function() {
             modal: true, 
             draggable: true,
             minWidth: 400,
+            close: function(event, ui) { 
+                jQuery('#colorpicker').hide();
+            },
             width: 400,
             buttons: {
                 "Save" : function () {
@@ -185,6 +188,23 @@ jQuery(document).ready(function() {
             {
                 if ($fieldData['type'] == 'date')
                     echo "jQuery('#edit$fieldKey').datepicker({dateFormat: 'yy-mm-dd',});\n";
+                else if ($fieldData['type'] == 'color')
+                {
+                    Assets::addJS('jquery_farbtastic.js', 100);
+                    Assets::addCSS('jquery_farbtastic.js', 100);
+                    ?>
+                        jQuery('#colorpicker').farbtastic('#edit<?php echo $fieldKey ?>');
+                        jQuery('#edit<?php echo $fieldKey ?>').bind('click', function() {
+                                var zindex = jQuery('ui-widget-overlay').css('zIndex');
+                                var offset = jQuery(this).offset();
+                                offset.left = offset.left + jQuery(this).width()+20;
+                                jQuery('#colorpicker')
+                                    .offset(offset)
+                                    .css('zIndex', zindex+1)
+                                    .show();
+                        });
+                    <?php
+                }
             }
         ?>
 });
