@@ -69,7 +69,7 @@ a:hover , a:active {
 }
 
 /* CSS Popup should be half-in and half-out of the content container and starting where the menu ends */
-a span
+#menu a span
 {
 	display: none;
 	color: #FFF;
@@ -79,7 +79,7 @@ a span
 	padding-left: 50px;
 }
 
-a:hover span
+#menu a:hover span
 {
 	display: block;
 	position: absolute; top: 365px; left: 130px;
