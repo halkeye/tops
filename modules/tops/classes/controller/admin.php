@@ -207,7 +207,7 @@ class controller_admin extends Controller_Template
             $this->request->redirect('auth/login');
             return false;
         }
-        $email = $this->session->get('account_email');
+        $email = strtolower($this->session->get('account_email'));
 
         $emails = Kohana::config("googleAuth.emails");
         if (isset($emails[$email]) && $emails[$email])
