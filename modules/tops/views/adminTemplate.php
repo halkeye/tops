@@ -11,17 +11,22 @@ $menuLinks = array(
         'rooms' => array(
             'title' => 'Manage Rooms',
             'img'   => 'manage',
-            'desc'  => 'Add, edit, remove and view rooms.',
+            'desc'  => 'Add, edit and view rooms.',
         ),
         'days' => array(
             'title' => 'Manage Days',
             'img'   => 'manage',
-            'desc'  => 'Add, edit, remove and view days.',
+            'desc'  => 'Add, edit and view days.',
         ),
         'types' => array(
             'title' => 'Manage Types',
             'img'   => 'manage',
-            'desc'  => 'Add, edit, remove and view types.',
+            'desc'  => 'Add, edit and view types.',
+        ),
+        'events' => array(
+            'title' => 'Manage Events',
+            'img'   => 'manage',
+            'desc'  => 'Add, edit and view events.',
         ),
 );
 

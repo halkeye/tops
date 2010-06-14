@@ -33,18 +33,23 @@ $jsonItems = array();
     <form action="#" method="post">
     <table>
     <?php
-        foreach ($fields as $fieldKey=>$fieldData): 
+        foreach ($fields as $fieldKey=>$fieldData)
+        { 
             if($fieldData['type'] == 'hidden') continue;
             $attr = array('type'=>'text', 'id' => "edit$fieldKey");
             if($fieldData['type'] == 'color') $attr['class'] = "color {pickerPosition:'top'}";
+            echo '<tr><td>';
+            echo htmlentities($fieldData['name']) . ': ';
+            echo '</td><td>';
+            if ($fieldData['type'] == 'select')
+            {
+                echo Form::select("edit$fieldKey", $fieldData['options'], NULL, array('id' => "edit$fieldKey"));
+            }
+            else
+                echo Form::input("edit$fieldKey", "", $attr);
+            echo '</td></tr>';
+        }
     ?>
-
-    <tr><td>
-        <?php echo htmlentities($fieldData['name']) ?>: 
-    </td><td>
-        <?php echo Form::input("edit$fieldKey", "", $attr) ?>
-    </td></tr>
-    <?php endforeach ?>
     </table>
     </form>
 </div>

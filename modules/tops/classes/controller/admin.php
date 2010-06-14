@@ -192,6 +192,28 @@ class controller_admin extends Controller_Template
         return;
     }
     /*
+ _____                 _       
+| ____|_   _____ _ __ | |_ ___ 
+|  _| \ \ / / _ \ '_ \| __/ __|
+| |___ \ V /  __/ | | | |_\__ \
+|_____| \_/ \___|_| |_|\__|___/
+    */
+    function action_events()
+    {
+        $events = ORM::factory('event')->find_all();
+        $rooms = ORM::factory('room')->find_all();
+        $days = ORM::factory('day')->find_all();
+        $types = ORM::factory('eventType')->find_all();
+
+        $this->template->content = View::factory('admin/eventList', array(
+                'events' => $events,
+                'rooms' => $rooms,
+                'days' => $days,
+                'types' => $types,
+        ));
+    }
+                               
+    /*
  _   _ _   _ _ _ _   _           
 | | | | |_(_) (_) |_(_) ___  ___ 
 | | | | __| | | | __| |/ _ \/ __|
