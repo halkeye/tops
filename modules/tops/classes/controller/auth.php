@@ -1,6 +1,10 @@
 <?php
 
-require_once Kohana::find_file('libraries/lightopenid', 'openid');
+{
+    $file = Kohana::find_file('libraries/lightopenid', 'openid');
+    $file or die("Unable to find lightopenid/openid.php");
+    require_once($file);
+}
 
 class controller_auth extends Controller
 {
