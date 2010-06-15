@@ -9,12 +9,13 @@ class Model_Event extends ORM
 
     protected $_rules = array(
             'name'    => array('not_empty' => array()),
-            'length' => array('numeric' => array()),
-            'time' => array('regex' => array('\d{3,4}')),
+            'roomId'  => array('not_empty' => array(), 'numeric' => array()),
+            'length'  => array('numeric' => array()),
+            'time'    => array('regex' => array('/\d{3,4}/')),
     );
 
     protected $_callbacks = array(
-            'time' => array('_time_constaint'),
+            'time' => array('_time_constraint'),
     );
 
     protected $_filters = array(
@@ -30,23 +31,20 @@ class Model_Event extends ORM
     public function _time_constraint(Validate $data, $field)
     {
         $timeSpans = array();
-        for($span = 0; $span <= $field['length']; $span++)
+        for($span = 0; $span <= $data['length']; $span++)
             $timeSpans[] = $data['time'] + $span*30;
 
-        (bool) DB::select(array('COUNT("*")', 'total_count'))
+        $conflictTime = (bool) DB::select(array('COUNT("*")', 'total_count'))
             ->from($this->_table_name)
             ->where('dayId', '=', $data['dayId'])
             ->where('roomId', '=', $data['dayId'])
-            ->where('time', 'NOT IN', $timeSpans)
+            ->where('time', 'IN', $timeSpans)
             ->where($this->_primary_key, '!=', $this->pk())
             ->execute($this->_db)
             ->get('total_count');
 
-        if ($this->unique_key_exists($field, $data[$field]))
-        {
-            $data->error($field, $field.'_unique', array($data[$field]));
-        }
-
+        if ($conflictTime)
+            $data->error($field, 'conflict_time', array($data[$field]));
     }
 
     public function __toString() { return $this->name; }

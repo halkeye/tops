@@ -46,14 +46,14 @@ class controller_admin extends Controller_Template
     {
         $data = array('success'=>0);
         $this->auto_render = FALSE;
-        $id = Arr::get($_REQUEST, 'id');
+        $id = Arr::get($_POST, 'id');
         if (!$id) die("no id provided");
 
         $room = ORM::factory('room')->find($id);
         if ($room->loaded())
         {
-            unset($_REQUEST['id']);
-            $room->values($_REQUEST);
+            unset($_POST['id']);
+            $room->values($_POST);
             $data = $this->_handleCRUDChange($room, $data);
         }
         else
@@ -72,7 +72,8 @@ class controller_admin extends Controller_Template
         $this->auto_render = FALSE;
         $room = ORM::factory('room');
 
-        $room->name = Arr::get($_REQUEST, 'name');
+        unset($_POST['id']);
+        $room->values($_POST);
         $data = $this->_handleCRUDChange($room, $data);
 
         $this->request->response = JSON::encode($data);
@@ -101,14 +102,14 @@ class controller_admin extends Controller_Template
     {
         $data = array('success'=>0);
         $this->auto_render = FALSE;
-        $id = Arr::get($_REQUEST, 'id');
+        $id = Arr::get($_POST, 'id');
         if (!$id) die("no id provided");
 
         $day = ORM::factory('day')->find($id);
         if ($day->loaded())
         {
-            unset($_REQUEST['id']);
-            $day->values($_REQUEST);
+            unset($_POST['id']);
+            $day->values($_POST);
             $data = $this->_handleCRUDChange($day, $data);
         }
         else
@@ -129,7 +130,8 @@ class controller_admin extends Controller_Template
         $this->auto_render = FALSE;
         $day = ORM::factory('day');
 
-        $day->day = Arr::get($_REQUEST, 'name');
+        unset($_POST['id']);
+        $day->values($_POST);
         $data = $this->_handleCRUDChange($day, $data);
 
         $this->request->response = JSON::encode($data);
@@ -161,7 +163,8 @@ class controller_admin extends Controller_Template
         $this->auto_render = FALSE;
         $type = ORM::factory('eventType');
 
-        $type->values($_REQUEST);
+        unset($_POST['id']);
+        $type->values($_POST);
         $data = $this->_handleCRUDChange($type, $data);
 
         $this->request->response = JSON::encode($data);
@@ -173,14 +176,14 @@ class controller_admin extends Controller_Template
     {
         $data = array('success'=>0);
         $this->auto_render = FALSE;
-        $id = Arr::get($_REQUEST, 'id');
+        $id = Arr::get($_POST, 'id');
         if (!$id) die("no id provided");
 
         $type = ORM::factory('eventType')->find($id);
         if ($type->loaded())
         {
-            unset($_REQUEST['id']);
-            $type->values($_REQUEST);
+            unset($_POST['id']);
+            $type->values($_POST);
             $data = $this->_handleCRUDChange($type, $data);
         }
         else
@@ -222,7 +225,8 @@ class controller_admin extends Controller_Template
         $this->auto_render = FALSE;
         $event = ORM::factory('event');
 
-        $event->values($_REQUEST);
+        unset($_POST['id']);
+        $event->values($_POST);
         $data = $this->_handleCRUDChange($event, $data);
 
         $this->request->response = JSON::encode($data);
@@ -234,18 +238,21 @@ class controller_admin extends Controller_Template
     {
         $data = array('success'=>0);
         $this->auto_render = FALSE;
-        $id = Arr::get($_REQUEST, 'id');
+        $id = Arr::get($_POST, 'id');
         if (!$id) die("no id provided");
 
         $event = ORM::factory('event')->find($id);
         if ($event->loaded())
         {
-            unset($_REQUEST['id']);
-            $event->values($_REQUEST);
+            unset($_POST['id']);
+            $event->values($_POST);
             $data = $this->_handleCRUDChange($event, $data);
-            $data['roomId.name'] = (string)$event->room;
-            $data['dayId.name'] = (string)$event->day;
-            $data['eventType1.name'] = (string)$event->eventType1Obj;
+            if ($data['success'])
+            {
+                $data['roomId.name'] = (string)$event->room;
+                $data['dayId.name'] = (string)$event->day;
+                $data['eventType1.name'] = (string)$event->eventType1Obj;
+            }
         }
         else
         {
@@ -288,7 +295,7 @@ class controller_admin extends Controller_Template
     {
         if (!$item->check())
         {
-            $errors = array_values($item->validate()->errors('', TRUE));
+            $errors = array_values($item->validate()->errors('models', TRUE));
             $data['message'] = "Unable to save item";
             if ($errors)
                 $data['message'] .= ": - " . implode(', - ', $errors);

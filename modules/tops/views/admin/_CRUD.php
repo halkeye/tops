@@ -108,7 +108,7 @@ var editClick = function() {
             jQuery.fn.bar.removebar()
             var dialogData = convertFormArrayToHash(dialog.find('form').serializeArray());
             dialogData['id'] = itemId;
-            jQuery.get('<?php echo url::site('admin/'.$modelName.'Update') ?>', dialogData, function(data) {
+            jQuery.post('<?php echo url::site('admin/'.$modelName.'Update') ?>', dialogData, function(data) {
                 if (data.success)
                 {
                     jQuery.fn.bar({ message: "<?php echo htmlentities($singleName) ?> updated successfully" });

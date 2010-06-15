@@ -6,7 +6,7 @@ class ORM extends Kohana_ORM
     {
         if ($this->unique_key_exists($field, $data[$field]))
         {
-            $data->error($field, $field.'_unique', array($data[$field]));
+            $data->error($field, 'name_unique', array($data[$field]));
         }
     }
 
