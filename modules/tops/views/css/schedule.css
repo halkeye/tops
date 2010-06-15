@@ -73,7 +73,7 @@ body {
 }
 
 .selectedSchedButton {
-    background-image: url("img/stripe_055054a09acd87998a982c5166b45075.png");
+    background-image: url("../img/stripe_055054a09acd87998a982c5166b45075.png");
     font-weight: bold;
     color: white;
 }
