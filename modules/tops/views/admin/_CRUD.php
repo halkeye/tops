@@ -19,9 +19,18 @@ $jsonItems = array();
         <tr<?php echo Text::alternate('', ' class="alt"'); ?>>
             <td class="itemId"><?php echo sprintf("%04d", $item->id) ?></td>
 
-            <?php foreach (array_keys($fields) as $fieldKey): ?>
-            <td><?php echo htmlentities($item->$fieldKey) ?></td>
-            <?php endforeach ?>
+            <?php 
+            foreach ($fields as $fieldKey => $fieldData)
+            {
+                $value = $item->$fieldKey;
+                if ($fieldData['type'] == 'select')
+                {
+                    $value = @$fieldData['options'][$value];
+                    if (!$value) $value = '[unknown]';
+                }
+
+                echo '<td>'.htmlentities($value).'</td>';
+            } ?>
 
             <td><a href="#" id="edit<?php echo $item->pk(); ?>" class='editLink'>(edit)</a></td>
         </tr>
@@ -67,6 +76,22 @@ function pad(number, length) {
     return str;
 }
 
+var handleCRUDRow = function(row, data)
+{
+    var children = row.children('td');
+    children.eq(0).text(pad(data.id,4));
+    var value;
+    for(var i = 0; i < fieldOrder.length; i++) 
+    {
+        value = data[fieldOrder[i]];
+        if (data.hasOwnProperty(fieldOrder[i] + '.name'))
+            value = data[fieldOrder[i] + '.name'];
+        children.eq(i+1).text(value);
+    }
+    itemsData[data.id] = data;
+}
+
+
 var editClick = function() {
     var obj = jQuery(this);
 
@@ -83,17 +108,12 @@ var editClick = function() {
             jQuery.fn.bar.removebar()
             var dialogData = convertFormArrayToHash(dialog.find('form').serializeArray());
             dialogData['id'] = itemId;
-            jQuery.post('<?php echo url::site('admin/'.$modelName.'Update') ?>', dialogData, function(data) {
+            jQuery.get('<?php echo url::site('admin/'.$modelName.'Update') ?>', dialogData, function(data) {
                 if (data.success)
                 {
                     jQuery.fn.bar({ message: "<?php echo htmlentities($singleName) ?> updated successfully" });
-                    var children = obj.parents('tr').children('td');
-
-                    for(var i = 0; i < fieldOrder.length; i++) 
-                    {
-                        children.eq(i+1).text(data[fieldOrder[i]]);
-                    }
-                    itemsData[itemId] = data;
+                    var row = obj.parents('tr');
+                    handleCRUDRow(row, data);
 
                     dialog.dialog("close");
                 }
@@ -108,7 +128,10 @@ var editClick = function() {
     dialog.dialog('open');
     for(var i = 0; i < fieldOrder.length; i++) 
     {
-        jQuery('#edit'+fieldOrder[i]).val(itemData[fieldOrder[i]]).focus().blur();
+        jQuery('#edit'+fieldOrder[i])
+            .val(itemData[fieldOrder[i]])
+            .focus()
+            .blur();
     }
 
     return false;
@@ -155,21 +178,14 @@ jQuery(document).ready(function() {
                             var lastRow = table.children('tr:last');
                             var newRow = lastRow.clone();
                             newRow.toggleClass('alt');
-                            var children = newRow.children('td');
+                            handleCRUDRow(newRow, data);
 
-                            children.eq(0).text(pad(data.id,4));
-                            for(var i = 0; i < fieldOrder.length; i++) 
-                            {
-                                children.eq(i+1).text(data[fieldOrder[i]]);
-                            }
-
-                            children.eq(fieldOrder.length+2).children('a').attr('id', 'edit'+data.id);
+                            newRow.children('td:last').children('a').attr('id', 'edit'+data.id);
 
                             jQuery('.editLink', newRow).bind('click', editClick);
                             table.append(newRow);
 
                             jQuery.fn.bar({ message: "New <?php echo htmlentities($singleName) ?> ("+data.asString+") has been created" });
-                            itemsData.push(data);
                             dialog.dialog("close");
                         }
                         else

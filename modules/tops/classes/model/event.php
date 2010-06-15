@@ -9,48 +9,44 @@ class Model_Event extends ORM
 
     protected $_rules = array(
             'name'    => array('not_empty' => array()),
-            'textColor' => array('color' => array()),
-            'bgColor' => array('color' => array()),
+            'length' => array('numeric' => array()),
+            'time' => array('regex' => array('\d{3,4}')),
     );
 
     protected $_callbacks = array(
-            'name' => array('_unique'),
+            'time' => array('_time_constaint'),
     );
 
     protected $_filters = array(
             TRUE       => array('trim' => array()),
-            'bgColor'       => array('Model_Eventtype::mkcolor' => array()),
-            'textColor'       => array('Model_Eventtype::mkcolor' => array()),
+    );
+
+    protected $_belongs_to = array(
+            'room' => array(),
+            'eventType1Obj' => array('foreign_key'=>'eventType1', 'model'=>'eventType'),
+            'day' => array(),
     );
     
-    public function _unique(Validate $data, $field)
+    public function _time_constraint(Validate $data, $field)
     {
+        $timeSpans = array();
+        for($span = 0; $span <= $field['length']; $span++)
+            $timeSpans[] = $data['time'] + $span*30;
+
+        (bool) DB::select(array('COUNT("*")', 'total_count'))
+            ->from($this->_table_name)
+            ->where('dayId', '=', $data['dayId'])
+            ->where('roomId', '=', $data['dayId'])
+            ->where('time', 'NOT IN', $timeSpans)
+            ->where($this->_primary_key, '!=', $this->pk())
+            ->execute($this->_db)
+            ->get('total_count');
+
         if ($this->unique_key_exists($field, $data[$field]))
         {
             $data->error($field, $field.'_unique', array($data[$field]));
         }
-    }
-    public static function mkcolor($value)
-    {
-        if (strpos($value, '#') !== 0)
-            $value = "#$value";
-        return $value;
-    }
 
-    /**
-     * Tests if a unique key value exists in the database.
-     *
-     * @param   mixed    the value to test
-     * @return  boolean
-     */
-    public function unique_key_exists($field, $value)
-    {
-        return (bool) DB::select(array('COUNT("*")', 'total_count'))
-            ->from($this->_table_name)
-            ->where($field, '=', $value)
-            ->where($this->_primary_key, '!=', $this->pk())
-            ->execute($this->_db)
-            ->get('total_count');
     }
 
     public function __toString() { return $this->name; }

@@ -200,7 +200,10 @@ class controller_admin extends Controller_Template
     */
     function action_events()
     {
-        $events = ORM::factory('event')->find_all();
+        $events = ORM::factory('event')
+            ->with('eventType1')
+            ->find_all();
+
         $rooms = ORM::factory('room')->find_all();
         $days = ORM::factory('day')->find_all();
         $types = ORM::factory('eventType')->find_all();
@@ -211,6 +214,46 @@ class controller_admin extends Controller_Template
                 'days' => $days,
                 'types' => $types,
         ));
+    }
+    
+    function action_eventCreate()
+    {
+        $data = array('success'=>0);
+        $this->auto_render = FALSE;
+        $event = ORM::factory('event');
+
+        $event->values($_REQUEST);
+        $data = $this->_handleCRUDChange($event, $data);
+
+        $this->request->response = JSON::encode($data);
+
+        return;
+    }
+
+    function action_eventUpdate()
+    {
+        $data = array('success'=>0);
+        $this->auto_render = FALSE;
+        $id = Arr::get($_REQUEST, 'id');
+        if (!$id) die("no id provided");
+
+        $event = ORM::factory('event')->find($id);
+        if ($event->loaded())
+        {
+            unset($_REQUEST['id']);
+            $event->values($_REQUEST);
+            $data = $this->_handleCRUDChange($event, $data);
+            $data['roomId.name'] = (string)$event->room;
+            $data['dayId.name'] = (string)$event->day;
+            $data['eventType1.name'] = (string)$event->eventType1Obj;
+        }
+        else
+        {
+            $data['message'] = "Unable to find event";
+        }
+
+        $this->request->response = JSON::encode($data);
+        return;
     }
                                
     /*

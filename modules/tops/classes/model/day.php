@@ -48,36 +48,12 @@ class Model_Day extends ORM
     );
 
     protected $_callbacks = array(
-            'day' => array('day_unique'),
+            'day' => array('name_unique'),
     );
 
     protected $_filters = array(
             TRUE       => array('trim' => array()),
     );
-    
-    public function day_unique(Validate $data, $field)
-    {
-        if ($this->unique_key_exists($data[$field]))
-        {
-            $data->error($field, 'day_unique', array($data[$field]));
-        }
-    }
-
-    /**
-     * Tests if a unique key value exists in the database.
-     *
-     * @param   mixed    the value to test
-     * @return  boolean
-     */
-    public function unique_key_exists($value)
-    {
-        return (bool) DB::select(array('COUNT("*")', 'total_count'))
-            ->from($this->_table_day)
-            ->where('day', '=', $value)
-            ->where($this->_primary_key, '!=', $this->pk())
-            ->execute($this->_db)
-            ->get('total_count');
-    }
 
     public function __toString() { return $this->day; }
     public function value() { return $this->day; }
