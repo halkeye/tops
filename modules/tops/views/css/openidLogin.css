@@ -1,6 +1,6 @@
 .provider {
     display: block;
-    background: url(/tops/index.php/static/img/openid_sprite.png) no-repeat;
+    background: url(../img/openid_sprite.png) no-repeat;
     height: 50px;
     margin: 10px 0px 8px;
     padding: 0px;
