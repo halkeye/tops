@@ -28,7 +28,21 @@ $menuLinks = array(
             'img'   => 'manage',
             'desc'  => 'Add, edit and view events.',
         ),
+        'import' => array(
+            'title' => 'Import Data',
+            'img'   => 'manage',
+            'desc'  => 'Import Data.',
+        ),
 );
+
+if (!isset($menuLinks[$currentPage]))
+{
+    foreach (array_keys($menuLinks) as $page)
+    {
+        if (substr($currentPage, 0, strlen($page)) == $page)
+            $currentPage = $page;
+    }
+}
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
