@@ -1,3 +1,6 @@
 [submodule "modules/tops/libraries/lightopenid"]
 	path = modules/tops/libraries/lightopenid
 	url = http://git.gitorious.org/lightopenid/lightopenid.git
+[submodule "modules/kohana-gdata"]
+	path = modules/kohana-gdata
+	url = git@github.com:halkeye/kohana-gdata.git
