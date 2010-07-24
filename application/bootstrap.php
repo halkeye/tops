@@ -51,8 +51,8 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
  */
 ### FIXME
 Kohana::init(array(
-	'base_url'   => '/tops/',
-	'index_file' => 'index.php',
+	'base_url'   => dirname($_SERVER['SCRIPT_NAME']),
+	'index_file' => basename($_SERVER['SCRIPT_NAME']),
 ));
 
 /**
