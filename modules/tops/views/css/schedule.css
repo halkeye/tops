@@ -2,7 +2,14 @@ body {
 	width: 980px;
 	margin: 0 auto;
     font-family: Tahoma, Verdana;
+    border: 1px solid #333;
 }
+.container {
+    width: 680px;
+    overflow: auto;
+    position: relative;
+}
+
 .clear {
     clear: both;
 }
@@ -15,15 +22,21 @@ body {
     float: left;
     text-align: center;
     margin-bottom: 5px;
-    width: 163px;
+    width: 142px;
     padding: 0px 5px
+}
+
+.roomColumn {
+    position: relative; 
+    float: left; 
+    margin-bottom: 25px;
 }
 
 .roomBlock {
     position: relative;
-    width: 173px;
-    border: 1px solid;
-    border-color: #838383;
+    width: 150px;
+    border: 1px solid #838383;
+    border-right: 0;
     background-image: url(../img/calendar_bg2.gif);
     background-position: 0 -2px;
 }
@@ -45,25 +58,23 @@ body {
     font-family: Tahoma, Verdana;
     font-size: 8pt;
     color: #838383;
-    border-top: 1px solid;
-    border-color: #838383;
+    border-top: 1px solid #838383;
     background-position: 0 -2px
 }
 
 .schedItem {
     position: absolute;
-    width: 161px;
-    padding: 5px 5px;
-    border: 1px solid;
-    font-weight: bold;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    overflow: hidden;
-    border-color: #000000;
+    margin-left: 1px;
+    width: 142px;
+    padding: 6px 2px 2px 2px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    overflow: hidden;text-overflow:ellipsis;
     opacity: 0.80;
     -moz-opacity: 0.8;
-    font-size: 8pt;
+    font-size: 9pt;
 }
 
 /* Types */
@@ -72,22 +83,23 @@ body {
     color: #EEEEEE;
 }
 
-.selectedSchedButton {
-    background-image: url("../img/stripe_055054a09acd87998a982c5166b45075.png");
-    font-weight: bold;
-    color: white;
-}
-
-#schedItemSelector {
-    padding-left: 20%;
-    padding-right: 20%;
+.legend {
+    font-size: 11pt;
+    background: #333;
+    padding: 5px 10px;
 }
 
 #schedItemSelector td {
     cursor: pointer;
-    padding: 2em;
-    width: 8em;
-    height: 2em;
-    border-width: .7em;
-    border-style: solid;
+}
+#schedItemSelector div {
+    padding: 3px 10px;
+    border: 3px solid transparent;
+    border-radius: 15px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+}
+
+#schedItemSelector .selectedSchedButton {
+    border-color: #fff;
 }
