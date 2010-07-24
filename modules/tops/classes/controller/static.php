@@ -19,7 +19,6 @@ class controller_static extends Controller
             $file = Kohana::find_file('views/js', basename($key, '.js'), 'js');
             if (!$file)
                 throw new Kohana_Exception("No such file or directory (:filename)", array('filename'=>"$key.js"));
-            readfile($file);
             $this->request->send_file($file, FALSE, array('mime_type' => 'application/x-javascript', 'inline' => 1));
         }
 
