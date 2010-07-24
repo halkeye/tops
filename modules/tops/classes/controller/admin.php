@@ -316,4 +316,116 @@ class controller_admin extends Controller_Template
         }
         return $data;
     }
+
+    public function action_import()
+    {
+        $this->template->content = "Muahhaa";
+        $my_calendar = 'http://www.google.com/calendar/feeds/default/private/full';
+        if (!isset($_SESSION['cal_token'])) 
+        {
+            if (isset($_GET['token'])) 
+            {
+                // You can convert the single-use token to a session token.
+                $session_token = Zend_Gdata_AuthSub::getAuthSubSessionToken($_GET['token']);
+                // Store the session token in our session.
+                $_SESSION['cal_token'] = $session_token;
+            } else {
+                // Display link to generate single-use token
+                $url = url::site('admin/import', TRUE);
+                $googleUri = Zend_Gdata_AuthSub::getAuthSubTokenUri($url,$my_calendar, 0, 1);
+                $this->template->content =  "Click <a href='$googleUri'>here</a> to authorize this application.";
+                return;
+            }
+        }
+
+        // Create an authenticated HTTP Client to talk to Google.
+        $client = Zend_Gdata_AuthSub::getHttpClient($_SESSION['cal_token']);
+        // Create a Gdata object using the authenticated Http Client
+        $this->cal = new Zend_Gdata_Calendar($client);
+
+        $this->template->content = "Now what?";
+        if (!$this->importSelectCal())
+            return;
+        if (!$this->importFromCal())
+            return;
+    }
+    public function importSelectCal()
+    {
+        if (isset($_POST['selectedCalendar']))
+            $_SESSION['selectedCal'] = $_POST['selectedCalendar'];
+        
+        if (!isset($_SESSION['calendars']))
+        {
+            try {
+                $listFeed = $this->cal->getCalendarListFeed();
+            } catch (Zend_Gdata_App_Exception $e) {
+                $this->template->content =  "Error: " . $e->getMessage();
+                return true;
+            }
+
+            $_SESSION['calendars'] = array();
+            foreach ($listFeed as $calendar)
+            {
+                $user = str_replace('http://www.google.com/calendar/feeds/default/', '', $calendar->id);
+                $user = str_replace('/','', $user);
+                $_SESSION['calendars'][$user] = (string) $calendar->title;
+            }
+        }
+
+        if (!isset($_SESSION['selectedCal']) || !$_SESSION['selectedCal'] || !$_SESSION['calendars'][$_SESSION['selectedCal']])
+            $_SESSION['selectedCal'] = '';
+
+
+        if (!$_SESSION['selectedCal'])
+        {
+            $data = array(
+                    'calendars' => $_SESSION['calendars'],
+                    'selectedCal' => $_SESSION['selectedCal'],
+            );
+            $this->template->content = View::factory('admin/selectCalendar', $data);
+            return false;
+        }
+        return true;
+    }
+
+    public function importFromCal()
+    {
+        if (
+                !isset($_SESSION['eventsCache']) || 
+                !isset($_SESSION['eventsCache'][$_SESSION['selectedCal']])
+           )
+        {
+            $query = $this->cal->newEventQuery();
+            $query->setUser($_SESSION['selectedCal']);
+            $query->setVisibility('private');
+            $query->setProjection('full');
+            $query->setOrderby('starttime');
+            $query->setFutureevents('true');
+
+            // Retrieve the event list from the calendar server
+            try {
+                $eventFeed = $this->cal->getCalendarEventFeed($query);
+            } catch (Zend_Gdata_App_Exception $e) {
+                $this->template->content =  "Error: " . $e->getMessage();
+                return true;
+            }
+
+            $events = array();
+            // Iterate through the list of events, outputting them as an HTML list
+            foreach ($eventFeed as $event) {
+                array_push($events, (object) array(
+                            'title' => (string) $event->title,
+                            'where' => (string) $event->Where[0],
+                            'startTime' => (string)  $event->when[0]->startTime,
+                            'endTime' => (string)  $event->when[0]->endTime,
+                ));
+            }
+            $_SESSION['eventsCache'][$_SESSION['selectedCal']] = $events;
+        }
+        $this->template->content = View::factory('admin/import_calEvents', array(
+                    'events'=>$_SESSION['eventsCache'][$_SESSION['selectedCal']]
+        ));
+
+        return true;
+    }
 }
