@@ -1,5 +1,5 @@
--- alter table events add startTime DateTime not null default '0000-00-00 00:00:00';
--- alter table events add endTime DateTime not null default '0000-00-00 00:00:00';
+alter table events add startTime DateTime not null default '0000-00-00 00:00:00';
+alter table events add endTime DateTime not null default '0000-00-00 00:00:00';
 
 UPDATE events e, days d
 SET 
