@@ -52,18 +52,21 @@
                         <div class="roomBlock" style="height: <?php echo (($totalHours+1)*$hourHeight)-2 ?>px; <?php if ($room == $rooms[0]): ?> margin-left: 50px <?php elseif ($room == $lastRoom): ?> border-right: 1px solid #838383 <?php endif ?>">
                         <?php 
                             $timeOffset = 0;
-                            foreach ($data[$room][$day] as $hour => $eventData) 
+                            if (isset($data[$room][$day]))
                             {
-                                $timeHeight = floor($hourHeight/2)*$eventData['length']-13 /* 12 = padding + border */;
-                                $timeOffset = $hourHeight*floor((($hour/100)-$hourData[$day]['minHour']));
-                                ?>
-                                <div style="margin-top: <?php echo $timeOffset; ?>px">
-                                    <div style="height: <?php echo $timeHeight; ?>px;" class="schedItem <?php echo implode(' ', $eventData['type']) ?>">
-                                        <?php echo htmlentities($eventData['name']); ?>
+                                foreach ($data[$room][$day] as $hour => $eventData) 
+                                {
+                                    $timeHeight = floor($hourHeight/2)*$eventData['length']-13 /* 12 = padding + border */;
+                                    $timeOffset = $hourHeight*floor((($hour/100)-$hourData[$day]['minHour']));
+                                    ?>
+                                    <div style="margin-top: <?php echo $timeOffset; ?>px">
+                                        <div style="height: <?php echo $timeHeight; ?>px;" class="schedItem <?php echo implode(' ', $eventData['type']) ?>">
+                                            <?php echo htmlentities($eventData['name']); ?>
+                                        </div>
                                     </div>
-                                </div>
-                            <?php
-                            } 
+                                <?php
+                                } 
+                            }
                         ?>
                        </div>
                         
