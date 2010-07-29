@@ -58,8 +58,10 @@ class controller_schedule extends Controller_Template
                     {
                         $hourData[$day]['maxHour'] = 23;
                         $hourData[$day]['maxMin'] = 00;
+
                         $startTime += 60/*seconds*/*60/*minutes*/*24/*hours*/;/* = 1 day*/
                         $day += 60/*seconds*/*60/*minutes*/*24/*hours*/;/* = 1 day*/
+
                         $startTime = strtotime(date('Y-m-d', $startTime).'T00:00:00'.date('O', $startTime));
                         $endTime = $realEndTime;
                         

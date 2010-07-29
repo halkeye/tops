@@ -59,9 +59,11 @@
                                 {
                                     $hour = date('H', $startTime);
                                     #echo "<pre>"; var_dump($eventData); echo "</pre>";
+
                                     $timeHeight = (floor($hourHeight/2)*($eventData['length']))-13 /* 12 = padding + border */;
                                     $timeOffset = $hourHeight*floor($hour-$hourData[$day]['minHour']);
-                                    if (date('i', $eventData['startTime']))
+                                    $hourmin = date('i', $eventData['startTime']);
+                                    if ((int) $hourmin)
                                         $timeOffset += $hourHeight/2; #to handle 30 min slots
                                     ?>
                                     <div style="margin-top: <?php echo $timeOffset; ?>px">
