@@ -343,17 +343,42 @@ class controller_admin extends Controller_Template
         // Create a Gdata object using the authenticated Http Client
         $this->cal = new Zend_Gdata_Calendar($client);
 
-        $this->template->content = "Now what?";
-        if (!$this->importSelectCal())
-            return;
-        if (!$this->importFromCal())
-            return;
+        $this->template->content = "";
+
+        if (isset($_POST['selectedCalendar']))
+            $_SESSION['selectedCal'] = $_POST['selectedCalendar'];
+
+        $this->_fetchCalendarCache();
+        $this->importSelectCal();
+
+
+        if (isset($_POST['doImport']) && $_POST['doImport'])
+        {
+            $events = array();
+            foreach ($_POST['events'] as $rawEvent)
+            {
+                $events[] = json_decode($rawEvent);
+            }
+        }
+        else if ($_SESSION['selectedCal'])
+        {
+            $this->_fetchEventsCache($_SESSION['selectedCal']);
+            $this->template->content .= View::factory('admin/import_calEvents', array(
+                        'events'=>$_SESSION['eventsCache'][$_SESSION['selectedCal']]
+            ));
+        }
     }
     public function importSelectCal()
     {
-        if (isset($_POST['selectedCalendar']))
-            $_SESSION['selectedCal'] = $_POST['selectedCalendar'];
-        
+        $data = array(
+                'calendars' => $_SESSION['calendars'],
+                'selectedCal' => $_SESSION['selectedCal'],
+        );
+        $this->template->content .= View::factory('admin/selectCalendar', $data);
+    }
+
+    public function _fetchCalendarCache()
+    {
         if (!isset($_SESSION['calendars']))
         {
             try {
@@ -374,29 +399,17 @@ class controller_admin extends Controller_Template
 
         if (!isset($_SESSION['selectedCal']) || !$_SESSION['selectedCal'] || !$_SESSION['calendars'][$_SESSION['selectedCal']])
             $_SESSION['selectedCal'] = '';
-
-
-        if (!$_SESSION['selectedCal'])
-        {
-            $data = array(
-                    'calendars' => $_SESSION['calendars'],
-                    'selectedCal' => $_SESSION['selectedCal'],
-            );
-            $this->template->content = View::factory('admin/selectCalendar', $data);
-            return false;
-        }
-        return true;
     }
 
-    public function importFromCal()
+    public function _fetchEventsCache($calendar)
     {
         if (
                 !isset($_SESSION['eventsCache']) || 
-                !isset($_SESSION['eventsCache'][$_SESSION['selectedCal']])
-           )
+                !isset($_SESSION['eventsCache'][$calendar])
+          )
         {
             $query = $this->cal->newEventQuery();
-            $query->setUser($_SESSION['selectedCal']);
+            $query->setUser($calendar);
             $query->setVisibility('private');
             $query->setProjection('full');
             $query->setOrderby('starttime');
@@ -416,16 +429,11 @@ class controller_admin extends Controller_Template
                 array_push($events, (object) array(
                             'title' => (string) $event->title,
                             'where' => (string) $event->Where[0],
-                            'startTime' => (string)  $event->when[0]->startTime,
-                            'endTime' => (string)  $event->when[0]->endTime,
+                            'startTime' => strtotime($event->when[0]->startTime),
+                            'endTime' => strtotime($event->when[0]->endTime),
                 ));
             }
-            $_SESSION['eventsCache'][$_SESSION['selectedCal']] = $events;
+            $_SESSION['eventsCache'][$calendar] = $events;
         }
-        $this->template->content = View::factory('admin/import_calEvents', array(
-                    'events'=>$_SESSION['eventsCache'][$_SESSION['selectedCal']]
-        ));
-
-        return true;
     }
 }
