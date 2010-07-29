@@ -392,8 +392,8 @@ class controller_admin extends Controller_Template
                 $event->roomId = $_POST['room'];
 
             $event->name = $data['title'];
-            $event->startTime = $data['startTime'];
-            $event->endTime = $data['endTime'];
+            $event->startTime = date('c', $data['startTime']);
+            $event->endTime   = date('c', $data['endTime']);
             $resultData = array();
             $this->_handleCRUDChange($event, $resultData);
             $events[] = $resultData;

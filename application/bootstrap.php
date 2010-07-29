@@ -69,6 +69,7 @@ Kohana::$config->attach(new Kohana_Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
+    'debug-toolbar' => MODPATH.'debug-toolbar',
 	'tops'  => MODPATH.'tops',
 	'kohana-gdata'  => MODPATH.'kohana-gdata',
 	// 'auth'       => MODPATH.'auth',       // Basic authentication

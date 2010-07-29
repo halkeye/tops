@@ -54,10 +54,15 @@
                             $timeOffset = 0;
                             if (isset($data[$room][$day]))
                             {
-                                foreach ($data[$room][$day] as $hour => $eventData) 
+                                ksort($data[$room][$day]);
+                                foreach ($data[$room][$day] as $startTime => $eventData) 
                                 {
-                                    $timeHeight = floor($hourHeight/2)*$eventData['length']-13 /* 12 = padding + border */;
-                                    $timeOffset = $hourHeight*floor((($hour/100)-$hourData[$day]['minHour']));
+                                    $hour = date('H', $startTime);
+                                    #echo "<pre>"; var_dump($eventData); echo "</pre>";
+                                    $timeHeight = (floor($hourHeight/2)*($eventData['length']-1))-13 /* 12 = padding + border */;
+                                    $timeOffset = $hourHeight*floor($hour-$hourData[$day]['minHour']);
+                                    if (date('i', $eventData['startTime']))
+                                        $timeOffset += $hourHeight/2; #to handle 30 min slots
                                     ?>
                                     <div style="margin-top: <?php echo $timeOffset; ?>px">
                                         <div style="height: <?php echo $timeHeight; ?>px;" class="schedItem <?php echo implode(' ', $eventData['type']) ?>">
@@ -83,8 +88,8 @@
                 <?php 
                 }
                 ?>
-            <?php endforeach; ?>
             <br style="clear:both" />
+            <?php endforeach; ?>
         </div>
     </div>
     <div class="legend">

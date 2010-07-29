@@ -19,10 +19,9 @@ echo View::factory('admin/_CRUD', array(
             'items' => $events,
             'fields' => array(
                 'roomId'     => array('name'=>'Room',   'type'=>'select', 'options'=>$roomOptions),
-                'dayId'      => array('name'=>'Day',    'type'=>'select', 'options'=>$dayOptions),
-                'time'       => array('name'=>'Time',   'type'=>'text'),
+                'startTime'  => array('name'=>'Start Time',   'type'=>'datetime'),
+                'endTime'  => array('name'=>'Start Time',   'type'=>'datetime'),
                 'name'       => array('name'=>'Name',   'type'=>'text'),
-                'length'     => array('name'=>'Length', 'type'=>'text'),
                 'eventType1' => array('name'=>'Type',   'type'=>'select', 'options'=>$typeOptions),
             ),
 ));

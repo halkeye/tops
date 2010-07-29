@@ -24,6 +24,8 @@ class controller_schedule extends Controller_Template
                 $eventData = array(
                     'name' => $result->get('name'),
                     'length' => (int)$result->get('length'),
+                    'startTime' => strtotime($result->get('startTime')),
+                    'endTime' => strtotime($result->get('endTime')),
                 );
                 foreach (range(1,4) as $i)
                 {
@@ -32,7 +34,7 @@ class controller_schedule extends Controller_Template
                 }
                 $eventData['type'] = array_keys($eventData['type']);
 
-                $data[$result->get('roomName')][$day][$result->get('time')] = $eventData;
+                $data[$result->get('roomName')][$day][strtotime($result->get('startTime'))] = $eventData;
             } while ($result->next() && $result->valid());
         }
 
@@ -54,6 +56,10 @@ class controller_schedule extends Controller_Template
                     'hourHeight' => $hourHeight,
                     'data' => $data,
         ));
+        if (class_exists('DebugToolbar'))
+        {
+            echo DebugToolbar::render();
+        }
 
     }
 }

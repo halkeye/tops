@@ -11,11 +11,11 @@ class Model_Event extends ORM
             'name'    => array('not_empty' => array()),
             'roomId'  => array('not_empty' => array(), 'numeric' => array()),
             'length'  => array('numeric' => array()),
-            'time'    => array('regex' => array('/\d{3,4}/')),
+            #'time'    => array('regex' => array('/\d{3,4}/')),
     );
 
     protected $_callbacks = array(
-            'time' => array('_time_constraint'),
+            #'time' => array('_time_constraint'),
     );
 
     protected $_filters = array(
