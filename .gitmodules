@@ -4,3 +4,18 @@
 [submodule "modules/kohana-gdata"]
 	path = modules/kohana-gdata
 	url = git@github.com:halkeye/kohana-gdata.git
+[submodule "modules/csrf"]
+    path = modules/csrf
+    url = git://github.com/synapsestudios/kohana-csrf.git
+[submodule "modules/minify"]
+    path = modules/minify
+    url = git://github.com/zazu/minify.git
+[submodule "modules/oauth"]
+    path = modules/oauth
+    url = git://github.com/mintbridge/kohana-oauth.git
+[submodule "modules/oauth2"]
+    path = modules/oauth2
+    url = git://github.com/kohana/oauth.git
+[submodule "modules/debug-toolbar"]
+    path = modules/debug-toolbar
+    url = git://github.com/biakaveron/debug-toolbar.git
