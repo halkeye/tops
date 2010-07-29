@@ -18,4 +18,4 @@
 	url = git://github.com/kohana/oauth.git
 [submodule "modules/debug-toolbar"]
 	path = modules/debug-toolbar
-	url = git://github.com/biakaveron/debug-toolbar.git
+	url = git://github.com/halkeye/debug-toolbar.git
