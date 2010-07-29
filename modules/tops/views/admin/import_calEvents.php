@@ -14,29 +14,30 @@ function eventsSortNoRoom($a, $b)
 }
 usort($events, "eventsSortNoRoom");
 
-echo "<h1>Calendar List Feed</h1>";
-echo Form::open('admin/import', array('method'=>'post'));
+echo "<h2>Events</h2>";
+echo Form::open('admin/import_doImport', array('method'=>'post'));
 {
-    #function  roomSort($a, $b)
-    #{
-    #    return strcmp($a->name, $b->name);
-    #}
+    function  roomSort($a, $b)
+    {
+        return strcmp($a->name, $b->name);
+    }
 
-    #uasort($rooms, 'roomSort');
+    uasort($existingRooms, 'roomSort');
     $rooms = array();
-    $rooms['default'] = 'User Provided Rooms';
-    #foreach ($exisingRooms as $room)
-    #{
-    #    $rooms[$room->id] = (string)$room;
-    #}
+    $rooms['default'] = 'Calendar Provided Rooms';
+    foreach ($existingRooms as $room)
+    {
+        $rooms[$room->id] = (string)$room;
+    }
 
 
-    echo "<div>Room:</div>";
+    echo "<h3>Room:</h3>";
     echo "<div>" . 
-        Form::select("selectedCalendar", array())
-        . "</div>"
+        Form::select("room", $rooms)
+        . "</div>";
 }
 
+echo '<h3>Events:</h3>';
 foreach ($events as $event)
 {
     echo "<div>";

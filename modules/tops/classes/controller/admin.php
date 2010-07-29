@@ -352,22 +352,56 @@ class controller_admin extends Controller_Template
         $this->importSelectCal();
 
 
-        if (isset($_POST['doImport']) && $_POST['doImport'])
-        {
-            $events = array();
-            foreach ($_POST['events'] as $rawEvent)
-            {
-                $events[] = json_decode($rawEvent);
-            }
-        }
-        else if ($_SESSION['selectedCal'])
+        if ($_SESSION['selectedCal'])
         {
             $this->_fetchEventsCache($_SESSION['selectedCal']);
             $this->template->content .= View::factory('admin/import_calEvents', array(
-                        'events'=>$_SESSION['eventsCache'][$_SESSION['selectedCal']]
+                        'events'=>$_SESSION['eventsCache'][$_SESSION['selectedCal']],
+                        'existingRooms' => ORM::factory('room')->find_all()->as_array(),
             ));
         }
     }
+
+    public function action_import_doImport()
+    {
+        $events = array();
+        foreach ($_POST['events'] as $rawEvent)
+        {
+            $data = json_decode($rawEvent, TRUE);
+            $event = ORM::Factory('event');
+
+            if ($_POST['room'] == 'default')
+            {
+                if (!isset($roomNameCache[$data['where']]))
+                {
+                    $room = ORM::factory('room')
+                        ->where('name', $data['where'])
+                        ->find();
+                    if ($room->loaded())
+                        $roomNameCache[$data['where']] = $room->id;
+                    else
+                    {
+                        $room = ORM::factory('room');
+                        $room->save();
+                        $roomNameCache[$data['where']] = $room->id;
+                    }
+                }
+                $event->roomId = $roomNameCache[$data['where']];
+            }
+            else
+                $event->roomId = $_POST['room'];
+
+            $event->name = $data['title'];
+            $event->startTime = $data['startTime'];
+            $event->endTime = $data['endTime'];
+            $resultData = array();
+            $this->_handleCRUDChange($event, $resultData);
+            $events[] = $resultData;
+            
+        }
+        $this->template->content = "Import Successful";
+    }
+
     public function importSelectCal()
     {
         $data = array(
