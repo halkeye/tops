@@ -7,7 +7,6 @@
     <?php echo HTML::script('static/js/jquery.js', NULL, TRUE); ?>
     <?php echo HTML::script('static/js/main.js', NULL, TRUE); ?>
     <?php echo HTML::style('static/css/schedule.css', NULL, TRUE); ?>
-    <link rel="stylesheet" href="css/style.css" />
     <style text="text/css">
         <?php
         /*
