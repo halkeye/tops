@@ -21,6 +21,15 @@ class controller_admin extends Controller_Template
         return $ret;
     }
 
+    function after()
+    {
+        if (class_exists('DebugToolbar'))
+        {
+            echo DebugToolbar::render();
+        }
+        return parent::after();
+    }
+
     function action_index()
     {
         $this->template->content = View::factory('admin/index');
@@ -364,6 +373,10 @@ class controller_admin extends Controller_Template
 
     public function action_import_doImport()
     {
+        if (isset($_POST['deleteExisting']) && $_POST['deleteExisting'])
+        {
+            ORM::Factory('event')->delete_all();
+        }
         $events = array();
         foreach ($_POST['events'] as $rawEvent)
         {
@@ -374,9 +387,7 @@ class controller_admin extends Controller_Template
             {
                 if (!isset($roomNameCache[$data['where']]))
                 {
-                    $room = ORM::factory('room')
-                        ->where('name', $data['where'])
-                        ->find();
+                    $room = ORM::factory('room', array('name' => $data['where']));
                     if ($room->loaded())
                         $roomNameCache[$data['where']] = $room->id;
                     else
@@ -399,7 +410,7 @@ class controller_admin extends Controller_Template
             $events[] = $resultData;
             
         }
-        $this->template->content = "Import Successful";
+        $this->template->content = "Import Successful:<br/><pre>".var_export($events,1)."</pre>";
     }
 
     public function importSelectCal()

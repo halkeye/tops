@@ -17,6 +17,11 @@ usort($events, "eventsSortNoRoom");
 echo "<h2>Events</h2>";
 echo Form::open('admin/import_doImport', array('method'=>'post'));
 {
+    echo "<h3>Delete all existing data?</h3>";
+    echo "<div> " . Form::radio("deleteExisting", 1, FALSE) . " Yes</div>";
+    echo "<div> " . Form::radio("deleteExisting", 0, TRUE) . " No</div>";
+}
+{
     function  roomSort($a, $b)
     {
         return strcmp($a->name, $b->name);
