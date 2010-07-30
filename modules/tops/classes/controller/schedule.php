@@ -22,24 +22,23 @@ class controller_schedule extends Controller_Template
         }
         {
 
-            $query = DB::Query(Database::SELECT, "SELECT e.*, (UNIX_TIMESTAMP(e.endTime)-UNIX_TIMESTAMP(e.startTime))/60/30 as length,r.name AS roomName,date(e.startTime) as eventDate FROM events e JOIN rooms r ON (e.roomId=r.id)");
+            $query = DB::Query(Database::SELECT, "SELECT e.*,r.name AS roomName,date(e.startTime) as eventDate FROM events e JOIN rooms r ON (e.roomId=r.id)");
             $result = $query->execute();
             do {
                 $day = strtotime($result->get('eventDate'));
 
                 $startTime = strtotime($result->get('startTime'));
                 $realEndTime = strtotime($result->get('endTime'));
-                $length = (int)$result->get('length');
 
                 $endTime = $realEndTime;
                 do {
                     $sameDay = (date('z', $startTime) == date('z', $endTime));
                     if (!$sameDay)
-                        $endTime = strtotime(date('Y-m-d', $startTime).'T24:00:00'.date('O', $startTime));
+                        $endTime = strtotime(date('Y-m-d', $startTime).'T23:59:59'.date('O', $startTime));
                     
                     $eventData = array(
                         'name' => $result->get('name'),
-                        'length' => $length,
+                        'length' => 1,
                         'startTime' => $startTime,
                         'endTime' => $endTime,
                         'startTimeString' => date('c', $startTime),
